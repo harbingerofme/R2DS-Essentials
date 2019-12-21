@@ -15,6 +15,7 @@
     <None Remove="LICENSE" />
     <None Remove="R2DS-Essentials.dll" />
     <None Remove="README.md" />
+    <None Remove="start_server.bat" />
   </ItemGroup>
 
   <ItemGroup>

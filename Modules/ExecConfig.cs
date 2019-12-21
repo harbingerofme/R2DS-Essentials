@@ -7,7 +7,7 @@ namespace R2DSEssentials.Modules
     internal sealed class ExecConfig : R2DSEModule
     {
         public const string ModuleName = nameof(ExecConfig);
-        public const string ModuleDescription = "Execute the server config file located in Risk of Rain 2_Data/Config/ (server.cfg by default).";
+        public const string ModuleDescription = "Execute the server config file of your choice located in Risk of Rain 2_Data/Config/ (server.cfg by default).";
         public const bool   DefaultEnabled = true;
 
         private ConfigEntry<string> _configFileName;
