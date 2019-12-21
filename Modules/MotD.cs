@@ -6,27 +6,40 @@ using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 using Mono.Cecil.Cil;
 using System.Collections.Generic;
 using BepInEx.Configuration;
-using R2API;
+using R2DSEssentials;
 
-namespace MotD
+namespace R2DSEssentials.Modules
 {
-    [BepInPlugin(GUID,NAME,VERSION)]
-    public class MotDPlugin : BaseUnityPlugin
+    [Module(ModuleName,ModuleDescription,DefaultEnabled)]
+    [ModuleDependency("SteamNames",ModuleDependency.DependencyType.Soft)]
+    internal sealed class MotD : R2DSEModule
     {
-        public const string
-            NAME = "SimpleMotD",
-            GUID = "com.harbingerofme." + NAME,
-            VERSION = "0.0.1";
+        public const string ModuleName = "MotD";
+        public const string ModuleDescription = "Sends a configurable message to clients upon joining";
+        public const bool   DefaultEnabled = true;
 
         private string modList = "";
 
         ConfigEntry<string> motd;
 
-        public void Awake()
+        public MotD(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
-            On.RoR2.RoR2Application.UnitySystemConsoleRedirector.Redirect += orig => { };
+        }
+
+
+        protected override void MakeConfig()
+        {
+            motd = AddConfig<string>("Message","This server runs: %MODLIST%", "You can use the following tokens: %STEAM%, %MODLIST%.");
+        }
+
+        protected override void Hook()
+        {
             IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal += GameNetworkManager_OnServerAddPlayerInternal1;
-            motd = Config.Bind<string>(new ConfigDefinition("", ""), "This server runs: %MODLIST%", new ConfigDescription("You can use the following tokens: %STEAM%, %MODLIST%."));
+        }
+
+        protected override void UnHook()
+        {
+            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal -= GameNetworkManager_OnServerAddPlayerInternal1;
         }
 
         private string GetModList()
