@@ -5,6 +5,7 @@
 
 #References
 libs/*.dll
+libs/*.xml
 
 # User-specific files
 *.rsuser
@@ -12,6 +13,8 @@ libs/*.dll
 *.user
 *.userosscache
 *.sln.docstates
+
+/R2DS-Essentials.dll
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

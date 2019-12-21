@@ -1,9 +1,6 @@
-﻿using System.IO;
-using System.Reflection;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using BepInEx;
 using Facepunch.Steamworks;
-using Path = System.IO.Path;
 
 namespace R2DSEssentials
 {
@@ -13,18 +10,10 @@ namespace R2DSEssentials
     {
         private const string ModVer = "0.0.1";
         private const string ModName = "R2DSEssentials";
-        public const string ModGuid = "com.iDeathHD.R2DSEssentials";
+        public const string ModGuid = "com.iDeathHD." + ModName;
 
-        private static string SteamWebAPIKey;
-        private const string SteamWebAPIKeyFileName = "SteamWebAPI.key";
-
-        public R2DSEssentials()
+        public void Awake()
         {
-            if (!ReadSteamWebAPIKeyFromFile(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName + $"/{SteamWebAPIKeyFileName}", out SteamWebAPIKey))
-            {
-                return;
-            }
-            
             On.RoR2.NetworkPlayerName.GetResolvedName += NetworkPlayerNameOnGetResolvedName;
         }
 
@@ -35,53 +24,32 @@ namespace R2DSEssentials
 
         private string GetPersonaNameWebAPI(ulong steamId)
         {
+            const string regexForLookUp = "<dd class=\"value\"><a href=\"(.*?)\"";
+            const string regexForPersonaName = "\"personaname\":\"(.*?)\"";
             const string unkString = "???";
 
             if (steamId.ToString().Length != 17)
                 return unkString;
 
             var wc = new System.Net.WebClient();
-            var address = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + SteamWebAPIKey + "&steamids=" + steamId;
-            byte[] raw = wc.DownloadData(address);
+
+            var steamidIo = "https://steamid.io/lookup/" + steamId;
+            byte[] raw = wc.DownloadData(steamidIo);
 
             var webData = System.Text.Encoding.UTF8.GetString(raw);
-            const string regexPattern = "\"personaname\":\"(.*?)\"";
-            var rx = new Regex(regexPattern,
+            var rx = new Regex(regexForLookUp,
+                RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+            var steamProfileUrl = rx.Match(webData).Groups[1].ToString();
+            raw = wc.DownloadData(steamProfileUrl);
+
+            webData = System.Text.Encoding.UTF8.GetString(raw);
+            rx = new Regex(regexForPersonaName,
                 RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
             var personaName = rx.Match(webData).Groups[1].ToString();
 
             return !personaName.Equals("") ? personaName : unkString;
-        }
-
-        private bool ReadSteamWebAPIKeyFromFile(string fileName, out string key)
-        {
-            key = null;
-            if (!File.Exists(fileName))
-            {
-                File.CreateText(fileName);
-                Path.ChangeExtension(fileName, ".key");
-
-                return false;
-            }
-
-            using (var sr = File.OpenText(fileName))
-            {
-                string line;
-                while ((line = sr.ReadLine()) != null)
-                {
-                    if (line.Length == 32)
-                    {
-                        key = line;
-                        return true;
-                    }
-
-                    Logger.LogError($"Could not find a correct key in the file {SteamWebAPIKeyFileName}. Please put a correct key in it. See https://steamcommunity.com/dev/apikey for more information.");
-                }
-            }
-
-            Logger.LogError($"Could not find the file {SteamWebAPIKeyFileName} that contains the Steam Web API Key. Please put a key in it. See https://steamcommunity.com/dev/apikey for more information.");
-            return false;
         }
     }
 }
