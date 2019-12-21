@@ -3,6 +3,8 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace R2DSEssentials
 {
@@ -17,24 +19,83 @@ namespace R2DSEssentials
         public static ManualLogSource Log;
         public static ConfigFile Configuration;
         public static Dictionary<string, R2DSEModule> Modules;
-        //private 
+
+
+        private Queue<ModuleAndAttribute>[] ModulesToLoad;
+        private readonly Type[] constructorParameters = new Type[] { typeof(string), typeof(string), typeof(bool) };
+        private readonly object[] constuctorArgumentArray;
+
         private PluginEntry()
         {
             Log = Logger;
             Configuration = Config;
             Modules = new Dictionary<string, R2DSEModule>();
+            ModulesToLoad = new Queue<ModuleAndAttribute>[2];
+            ModulesToLoad[0] = new Queue<ModuleAndAttribute>();
+            ModulesToLoad[1] = new Queue<ModuleAndAttribute>();
+
+            var types = Assembly.GetExecutingAssembly().GetTypes();
+            foreach (Type type in types)
+            {
+                ModuleAttribute customAttr = (ModuleAttribute)type.GetCustomAttributes(typeof(ModuleAttribute), false).FirstOrDefault();
+                if (customAttr != null)
+                {
+                    if (customAttr.target == ModuleAttribute.StartupTarget.Awake)
+                    {
+                        ModulesToLoad[0].Enqueue(new ModuleAndAttribute() { Module = type, attribute = customAttr});
+                    }
+                    else
+                    {
+                        ModulesToLoad[1].Enqueue(new ModuleAndAttribute() { Module = type, attribute = customAttr });
+                    }
+                }
+            }
         }
 
         private void Awake()
         {
-
+            while (ModulesToLoad[0].Count > 0)
+            {
+                ModuleAndAttribute temp = ModulesToLoad[0].Dequeue();
+                EnableModule(temp);
+            }
         }
 
         private void Start()
         {
-
+            while (ModulesToLoad[0].Count > 0)
+            {
+                ModuleAndAttribute temp = ModulesToLoad[1].Dequeue();
+                EnableModule(temp);
+            }
         }
 
+        private void EnableModule(ModuleAndAttribute module)
+        {
+            ModuleAttribute customAttr = module.attribute;
+            Type type = module.Module;
+            //constuctorArgumentArray[0] is set in the constructor of this class.
+            constuctorArgumentArray[1] = customAttr.Name;
+            constuctorArgumentArray[2] = customAttr.Description;
+            constuctorArgumentArray[3] = customAttr.DefaultEnabled;
+            try
+            {
+                var ctor = type.GetConstructor(constructorParameters);
+                R2DSEModule loadedModule = (R2DSEModule)ctor.Invoke(constuctorArgumentArray);
+                loadedModule.ReloadHooks();
+                Modules.Add(customAttr.Name, loadedModule);
+            }
+            catch
+            {
+                Logger.LogError($"Couldn't load module: {constuctorArgumentArray[1]}");
+            }
+        }
+
+        private sealed class ModuleAndAttribute
+        {
+            public Type Module;
+            public ModuleAttribute attribute;
+        }
     }
 
     abstract class R2DSEModule
@@ -130,5 +191,4 @@ namespace R2DSEssentials
         }
     }
 
-}
 }
