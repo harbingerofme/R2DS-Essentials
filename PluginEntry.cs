@@ -19,13 +19,15 @@ namespace R2DSEssentials
         public static ConfigFile Configuration;
         public static Dictionary<string, R2DSEModule> Modules;
 
-
         private Queue<ModuleAndAttribute>[] ModulesToLoad;
         private readonly Type[] constructorParameters = new Type[] { typeof(string), typeof(string), typeof(bool) };
         private readonly object[] constuctorArgumentArray = new object[3];
 
+        internal static PluginEntry Instance;
+
         private PluginEntry()
         {
+            Instance = this;
             Log = Logger;
             Configuration = Config;
             Modules = new Dictionary<string, R2DSEModule>();
