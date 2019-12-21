@@ -6,15 +6,14 @@ using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 using Mono.Cecil.Cil;
 using System.Collections.Generic;
 using BepInEx.Configuration;
-using R2DSEssentials;
 
 namespace R2DSEssentials.Modules
 {
-    [Module(ModuleName,ModuleDescription,DefaultEnabled)]
-    [ModuleDependency("SteamNames",ModuleDependency.DependencyType.Soft)]
+    [Module(ModuleName, ModuleDescription, DefaultEnabled)]
+    [ModuleDependency(nameof(RetrieveUsername), ModuleDependency.DependencyType.Soft)]
     internal sealed class MotD : R2DSEModule
     {
-        public const string ModuleName = "MotD";
+        public const string ModuleName = nameof(MotD);
         public const string ModuleDescription = "Sends a configurable message to clients upon joining";
         public const bool   DefaultEnabled = true;
 

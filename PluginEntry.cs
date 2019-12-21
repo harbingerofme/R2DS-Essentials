@@ -12,10 +12,9 @@ namespace R2DSEssentials
     [BepInPlugin(ModGuid, ModName, ModVer)]
     class PluginEntry : BaseUnityPlugin
     {
-
         private const string ModVer = "0.0.1";
         private const string ModName = "R2DSE";
-        public const string ModGuid = "com.iDeathHD&Harb." + ModName;
+        public const string ModGuid = "com.HarbAndDeath." + ModName;
         public static ManualLogSource Log;
         public static ConfigFile Configuration;
         public static Dictionary<string, R2DSEModule> Modules;
@@ -72,6 +71,8 @@ namespace R2DSEssentials
 
         private void EnableModule(ModuleAndAttribute module)
         {
+            Logger.LogError("enabling module : " + module.attribute.Name);
+
             ModuleAttribute customAttr = module.attribute;
             Type type = module.Module;
             constuctorArgumentArray[0] = customAttr.Name;
