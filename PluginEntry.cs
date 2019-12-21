@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using On.RoR2;
+using UnityEngine;
 
 namespace R2DSEssentials
 {
@@ -17,6 +19,7 @@ namespace R2DSEssentials
         public const string ModGuid = "com.HarbAndDeath." + ModName;
         public static ManualLogSource Log;
         public static ConfigFile Configuration;
+        private static ConfigEntry<bool> DisableWhenGraphicDetected;
         public static Dictionary<string, R2DSEModule> Modules;
 
         private Queue<ModuleAndAttribute>[] ModulesToLoad;
@@ -34,6 +37,14 @@ namespace R2DSEssentials
             ModulesToLoad = new Queue<ModuleAndAttribute>[2];
             ModulesToLoad[0] = new Queue<ModuleAndAttribute>();
             ModulesToLoad[1] = new Queue<ModuleAndAttribute>();
+
+            DisableWhenGraphicDetected = Configuration.Bind("_R2DSE", "DisableWhenGraphicsDetected", true, "Disable the plugin when game graphics are detected.");
+
+            if (!Application.isBatchMode && DisableWhenGraphicDetected.Value)
+            {
+                Logger.LogWarning("Detected graphics. Plugin disabled. If you want to use R2DSE in this mode please change the plugin config.");
+                return;
+            }
 
             var types = Assembly.GetExecutingAssembly().GetTypes();
             foreach (Type type in types)
@@ -66,7 +77,7 @@ namespace R2DSEssentials
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Start is called right after all catalogs have been initialized.")]
         private void Start()
         {
-            while (ModulesToLoad[0].Count > 0)
+            while (ModulesToLoad[1].Count > 0)
             {
                 ModuleAndAttribute temp = ModulesToLoad[1].Dequeue();
                 EnableModule(temp);
@@ -75,7 +86,7 @@ namespace R2DSEssentials
 
         private void EnableModule(ModuleAndAttribute module)
         {
-            Logger.LogError($"Enabling module: {module.attribute.Name}");
+            Logger.LogInfo($"Enabling module: {module.attribute.Name}");
 
             ModuleAttribute customAttr = module.attribute;
             Type type = module.Module;
@@ -141,15 +152,15 @@ namespace R2DSEssentials
         protected abstract void MakeConfig();
 
 
-        protected ConfigEntry<T> AddConfig<T>(string settingShortDescr, T value, string settingLongDescr)
+        protected ConfigEntry<T> AddConfig<T>(string key, T defaultValue, string description)
         {
-            return AddConfig(settingShortDescr, value, new ConfigDescription(settingLongDescr));
+            return AddConfig(key, defaultValue, new ConfigDescription(description));
         }
 
-        protected ConfigEntry<T> AddConfig<T>(string settingShortDescr, T value, ConfigDescription configDescription)
+        protected ConfigEntry<T> AddConfig<T>(string key, T defaultValue, ConfigDescription configDescription)
         {
             ConfigDescription orderedConfigDescription = new ConfigDescription(configDescription.Description, configDescription.AcceptableValues);
-            ConfigEntry<T> entry = PluginEntry.Configuration.Bind(Name, settingShortDescr, value, orderedConfigDescription);
+            ConfigEntry<T> entry = PluginEntry.Configuration.Bind(Name, key, defaultValue, orderedConfigDescription);
             entry.SettingChanged += ReloadHooks;
             return entry;
         }
