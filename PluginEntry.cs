@@ -53,6 +53,7 @@ namespace R2DSEssentials
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Awake is called right after the constructor.")]
         private void Awake()
         {
             while (ModulesToLoad[0].Count > 0)
@@ -62,6 +63,7 @@ namespace R2DSEssentials
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Start is called right after all catalogs have been initialized.")]
         private void Start()
         {
             while (ModulesToLoad[0].Count > 0)
