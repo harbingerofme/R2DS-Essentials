@@ -19,6 +19,7 @@ namespace R2DSEssentials.Modules
         public const bool   DefaultEnabled = true;
 
         private string modList = "";
+        private static readonly string[] tokens = { "%STEAM%", "%MODLIST%" };
 
         ConfigEntry<string> motd;
 
@@ -29,7 +30,7 @@ namespace R2DSEssentials.Modules
 
         protected override void MakeConfig()
         {
-            motd = AddConfig<string>("Message","This server runs: %MODLIST%", "You can use the following tokens: %STEAM%, %MODLIST%.");
+            motd = AddConfig<string>("Message","This server runs: %MODLIST%", $"You can use the following tokens: {string.Join(", ",tokens)}.");
         }
 
         protected override void Hook()
