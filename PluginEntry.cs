@@ -74,10 +74,9 @@ namespace R2DSEssentials
         {
             ModuleAttribute customAttr = module.attribute;
             Type type = module.Module;
-            //constuctorArgumentArray[0] is set in the constructor of this class.
-            constuctorArgumentArray[1] = customAttr.Name;
-            constuctorArgumentArray[2] = customAttr.Description;
-            constuctorArgumentArray[3] = customAttr.DefaultEnabled;
+            constuctorArgumentArray[0] = customAttr.Name;
+            constuctorArgumentArray[1] = customAttr.Description;
+            constuctorArgumentArray[2] = customAttr.DefaultEnabled;
             try
             {
                 var ctor = type.GetConstructor(constructorParameters);
