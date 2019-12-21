@@ -22,7 +22,7 @@ namespace R2DSEssentials
 
         private Queue<ModuleAndAttribute>[] ModulesToLoad;
         private readonly Type[] constructorParameters = new Type[] { typeof(string), typeof(string), typeof(bool) };
-        private readonly object[] constuctorArgumentArray;
+        private readonly object[] constuctorArgumentArray = new object[3];
 
         private PluginEntry()
         {
@@ -71,7 +71,7 @@ namespace R2DSEssentials
 
         private void EnableModule(ModuleAndAttribute module)
         {
-            Logger.LogError("enabling module : " + module.attribute.Name);
+            Logger.LogError($"Enabling module: {module.attribute.Name}");
 
             ModuleAttribute customAttr = module.attribute;
             Type type = module.Module;
