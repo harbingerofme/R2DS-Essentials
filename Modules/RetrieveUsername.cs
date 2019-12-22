@@ -70,7 +70,7 @@ namespace R2DSEssentials.Modules
         }
 
         // ReSharper disable once InconsistentNaming
-        private string GetPersonaNameWebAPI(ulong steamId)
+        internal string GetPersonaNameWebAPI(ulong steamId)
         {
             const string unkString = "???";
 

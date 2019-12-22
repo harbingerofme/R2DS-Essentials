@@ -18,7 +18,7 @@ namespace R2DSEssentials.Modules
         public const bool   DefaultEnabled = true;
 
         private string modList = "";
-        private static readonly string[] tokens = { "%STEAM%", "%MODLIST%" };
+        private static readonly string[] tokens = { "%STEAM%", "%MODLIST%", "%USER%" };
 
         ConfigEntry<string> motd;
 
@@ -80,10 +80,24 @@ namespace R2DSEssentials.Modules
                 var steam = RoR2.Networking.ServerAuthManager.FindAuthData(conn).steamId;
                 message = message.Replace("%STEAM%", steam.ToString());
             }
+
             if (message.Contains("%MODLIST%"))
             {
                 message = message.Replace("%MODLIST%", GetModList());
             }
+
+            if (message.Contains("%USER%"))
+            {
+                if (PluginEntry.Modules.ContainsKey(nameof(RetrieveUsername)) && PluginEntry.Modules[nameof(RetrieveUsername)].IsEnabled) {
+                    var steam = RoR2.Networking.ServerAuthManager.FindAuthData(conn).steamId.value;
+                    message = message.Replace("%USER%", ((RetrieveUsername) PluginEntry.Modules[nameof(RetrieveUsername)]).GetPersonaNameWebAPI(steam));
+                }
+                else
+                {
+                    Logger.LogWarning($"MOTD: Can't replace %USER% as module `{nameof(RetrieveUsername)}` is not enabled.");
+                }
+            }
+
             return message;
         }
 
