@@ -5,19 +5,26 @@ Bunch of essentials modules for any self-respecting Dedicated Server.
 
 Intended to work for vanilla clients, although obviously other mods you have installed may invalidate this.
 
-If you want an usable console window : Put the start_server.bat in the same folder as the regular game executable and use it to launch your dedicated server
+## Main Features
+
+- Let you Choose to enable and disable what modules you want from the config file located in `BepInEx\config`.
+- Interactible Server Console to execute commands directly from the console window ! 
+- Remove useless spam (`Filename: C:\buildslave...` and `Fallback...`) for easier monitoring.
 
 ## Modules
 
 ### ExecConfig
-	This module is only useful if you use the start_server.bat ! Execute the server config file of your choice located in `Risk of Rain 2_Data/Config/` (server.cfg by default).
+Execute the server config file of your choice located in `Risk of Rain 2_Data/Config/` (server.cfg by default).
+
+### HideIP
+Hides the IP from the console.
 
 ### MotD
-	Adds a configurable message of the day that is send to clients when they connect.
+Adds a configurable message of the day that is send to clients when they connect.
 
 ### RetrieveUsername
-	Makes the users appear with their actual steam nickname instead of `[unknown]`.
+Makes the users appear with their actual steam nickname instead of `[unknown]`.
   
 ## Planned features
 
-* Interactible Server Console to execute commands directly from the console window.
+- ?
