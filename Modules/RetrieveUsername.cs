@@ -123,7 +123,7 @@ namespace R2DSEssentials.Modules
                             {
                                 if (networkUser.GetNetworkPlayerName().steamId.value == steamId)
                                 {
-                                    Logger.LogInfo($"New player : {nameFromRegex} connected.");
+                                    Logger.LogInfo($"New player : {nameFromRegex} connected. (STEAM:{steamId})");
                                     networkUser.userName = nameFromRegex;
                                     break;
                                 }
