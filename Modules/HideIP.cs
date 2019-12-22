@@ -8,7 +8,7 @@ namespace R2DSEssentials.Modules
     class HideIP : R2DSEModule
     {
         public const string ModuleName = nameof(HideIP);
-        public const string ModuleDescription = "Hides the IP from the console.";
+        public const string ModuleDescription = "Hides the IP from the console. This is useful if you're writing guides on a local machine and don't want your local ip adress to leak.";
         public const bool DefaultEnabled = false;
 
         public HideIP(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
