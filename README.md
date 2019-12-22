@@ -13,17 +13,17 @@ Intended to work for vanilla clients, although obviously other mods you have ins
 
 ## Modules
 
+### RetrieveUsername
+Makes the users appear with their actual steam nickname instead of `[unknown]`.
+
 ### ExecConfig
 Execute the server config file of your choice located in `Risk of Rain 2_Data/Config/` (server.cfg by default).
 
-### HideIP
-Hides the IP from the console.
-
 ### MotD
-Adds a configurable message of the day that is send to clients when they connect.
+Adds a configurable message of the day that is send to clients when they connect. Supports tokens.
 
-### RetrieveUsername
-Makes the users appear with their actual steam nickname instead of `[unknown]`.
+### HideIP
+Hides the IP from the console output window, mostly for preventing privacy leaks during debugging.
   
 ## Planned features
 
