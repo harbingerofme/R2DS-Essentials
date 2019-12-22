@@ -6,6 +6,7 @@ using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 using Mono.Cecil.Cil;
 using System.Collections.Generic;
 using BepInEx.Configuration;
+using System;
 
 namespace R2DSEssentials.Modules
 {
@@ -18,7 +19,7 @@ namespace R2DSEssentials.Modules
         public const bool   DefaultEnabled = true;
 
         private string modList = "";
-        private static readonly string[] tokens = { "%STEAM%", "%MODLIST%", "%USER%" };
+        private static readonly string[] tokens = { "%STEAM%", "%MODLIST%", "%USER%", "%TIME%" };
 
         ConfigEntry<string> motd;
 
@@ -64,7 +65,7 @@ namespace R2DSEssentials.Modules
             c.GotoNext(MoveType.Before,
                 x => x.MatchRet());
             c.Emit(OpCodes.Ldarg_1);
-            c.EmitDelegate<Action<NetworkConnection>>((conn) =>
+            c.EmitDelegate<RuntimeILReferenceBag.FastDelegateInvokers.Action<NetworkConnection>>((conn) =>
             {
                
                 var message = new Chat.SimpleChatMessage() { baseToken = "{0}", paramTokens = new[] { GenerateMotDFormatted(conn) } };
@@ -96,6 +97,11 @@ namespace R2DSEssentials.Modules
                 {
                     Logger.LogWarning($"MOTD: Can't replace %USER% as module `{nameof(RetrieveUsername)}` is not enabled.");
                 }
+            }
+
+            if (message.Contains("%TIME%"))
+            {
+                message = message.Replace("%TIME%", DateTime.Now.TimeOfDay.ToString(@"hh\:mm\:ss"));
             }
 
             return message;
