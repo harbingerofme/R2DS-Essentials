@@ -8,13 +8,14 @@ namespace R2DSEssentials.Modules
     {
         public const string ModuleName = nameof(ExecConfig);
         public const string ModuleDescription = "Execute the server config file of your choice located in Risk of Rain 2_Data/Config/ (server.cfg by default).";
-        public const bool   DefaultEnabled = true;
+        public const bool   DefaultEnabled = false;
 
         private ConfigEntry<string> _configFileName;
 
         public ExecConfig(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
-            Console.instance.SubmitCmd(null, $"exec {_configFileName.Value}");
+            if(IsEnabled)
+                Console.instance.SubmitCmd(null, $"exec {_configFileName.Value}");
         }
 
 
