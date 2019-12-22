@@ -97,11 +97,14 @@ namespace R2DSEssentials
                 var keyInfo = Console.ReadKey();
                 if (keyInfo.Key == ConsoleKey.Enter)
                 {
+                    Console.WriteLine();
                     RoR2.Console.instance.SubmitCmd(null, _consoleCommand.ToString());
                     _consoleCommand.Clear();
                 }
                 else
                 {
+                    Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
+                    Console.Write(keyInfo.KeyChar);
                     _consoleCommand.Append(keyInfo.KeyChar);
                 }
             }
