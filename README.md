@@ -5,6 +5,8 @@ Bunch of essentials modules for any self-respecting Dedicated Server.
 
 Intended to work for vanilla clients, although obviously other mods you have installed may invalidate this.
 
+Track update progress, get support and suggest new features over at the [R2DSE discord](https://discord.gg/yTfsMWP).
+
 ## Main Features
 
 - Let you Choose to enable and disable what modules you want from the config file located in `BepInEx\config`.
