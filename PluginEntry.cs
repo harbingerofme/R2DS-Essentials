@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using On.RoR2;
+using System.Text;
 using UnityEngine;
+using Console = System.Console;
 
 namespace R2DSEssentials
 {
@@ -27,6 +28,8 @@ namespace R2DSEssentials
         private readonly object[] constuctorArgumentArray = new object[3];
 
         internal static PluginEntry Instance;
+
+        private static StringBuilder _consoleCommand = new StringBuilder();
 
         private PluginEntry()
         {
@@ -81,6 +84,26 @@ namespace R2DSEssentials
             {
                 ModuleAndAttribute temp = ModulesToLoad[1].Dequeue();
                 EnableModule(temp);
+            }
+        }
+
+        private void Update()
+        {
+            if (!Application.isBatchMode)
+                return;
+
+            if (Console.KeyAvailable)
+            {
+                var keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    RoR2.Console.instance.SubmitCmd(null, _consoleCommand.ToString());
+                    _consoleCommand.Clear();
+                }
+                else
+                {
+                    _consoleCommand.Append(keyInfo.KeyChar);
+                }
             }
         }
 
