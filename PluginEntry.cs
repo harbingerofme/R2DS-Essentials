@@ -11,7 +11,7 @@ using Console = System.Console;
 
 namespace R2DSEssentials
 {
-    [BepInDependency(R2API.R2API.PluginGUID)]
+    [BepInDependency(R2API.R2API.PluginGUID,BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(ModGuid, ModName, ModVer)]
     class PluginEntry : BaseUnityPlugin
     {
