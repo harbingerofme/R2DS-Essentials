@@ -128,7 +128,7 @@ namespace R2DSEssentials
             }
             catch
             {
-                Logger.LogError($"Couldn't load module: {constuctorArgumentArray[1]}");
+                Logger.LogError($"Couldn't load module: {constuctorArgumentArray[0]}");
             }
         }
 
