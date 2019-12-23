@@ -4,6 +4,6 @@
     "website_url": "https://github.com/harbingerofme/R2DS-Essentials",
     "description": "Essentials for dedicated servers.",
     "dependencies": [
-		bbepis-BepInExPack-3.0.0
+		"bbepis-BepInExPack-3.0.0"
     ]
 }
