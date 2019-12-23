@@ -1,17 +1,15 @@
 # R2DS-Essentials
-*name not final*
 
-Bunch of essentials modules for any self-respecting Dedicated Server.
+**Risk of Rain 2 Dedicated Server Essentials** (**R2DSE**) is a mod containing a bunch of modules for any self-respecting dedicated server.
 
-Intended to work for vanilla clients, although obviously other mods you have installed may invalidate this.
+Intended to work for all clients, including vanilla, although obviously other mods you have installed may invalidate this.
 
 Track update progress, get support and suggest new features over at the [R2DSE discord](https://discord.gg/yTfsMWP).
 
 ## Main Features
 
-- Let you Choose to enable and disable what modules you want from the config file located in `BepInEx\config`.
+- Let you choose to enable and disable what modules you want from the config file located in `BepInEx\config`.
 - Interactible Server Console to execute commands directly from the console window ! 
-- Remove useless spam (`Filename: C:\buildslave...` and `Fallback...`) for easier monitoring.
 
 ## Modules
 
