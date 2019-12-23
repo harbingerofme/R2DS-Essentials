@@ -16,7 +16,9 @@ namespace R2DSEssentials.Modules
         public const string ModuleDescription = "Retrieve player usernames through third party website. Don't need a steam api key.";
         public const bool   DefaultEnabled = true;
 
-        private readonly Dictionary<ulong, string> _usernamesCache = new Dictionary<ulong, string>();
+        internal static event Action OnUsernameUpdated;
+
+        internal static readonly Dictionary<ulong, string> UsernamesCache = new Dictionary<ulong, string>();
         private readonly List<ulong> _requestCache = new List<ulong>();
 
         public RetrieveUsername(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
@@ -46,7 +48,7 @@ namespace R2DSEssentials.Modules
         {
             if (Server.Instance != null)
             {
-                return _usernamesCache.TryGetValue(self.steamId.value, out var name) ? name : GetPersonaNameWebAPI(self.steamId.value);
+                return UsernamesCache.TryGetValue(self.steamId.value, out var name) ? name : GetPersonaNameWebAPI(self.steamId.value);
             }
 
             return orig(ref self);
@@ -54,7 +56,7 @@ namespace R2DSEssentials.Modules
 
         private void EmptyCachesOnGameOver(Run self, GameResultType gameResult)
         {
-            _usernamesCache.Clear();
+            UsernamesCache.Clear();
             _requestCache.Clear();
         }
 
@@ -64,7 +66,7 @@ namespace R2DSEssentials.Modules
             {
                 var steamId = steamNetworkConnection.steamId.value;
 
-                _usernamesCache.Remove(steamId);
+                UsernamesCache.Remove(steamId);
                 _requestCache.Remove(steamId);
             }
         }
@@ -116,15 +118,18 @@ namespace R2DSEssentials.Modules
 
                     if (!nameFromRegex.Equals(""))
                     {
-                        if (!_usernamesCache.ContainsKey(steamId))
+                        if (!UsernamesCache.ContainsKey(steamId))
                         {
-                            _usernamesCache.Add(steamId, nameFromRegex);
+                            UsernamesCache.Add(steamId, nameFromRegex);
                             foreach (var networkUser in NetworkUser.readOnlyInstancesList)
                             {
                                 if (networkUser.GetNetworkPlayerName().steamId.value == steamId)
                                 {
                                     Logger.LogInfo($"New player : {nameFromRegex} connected. (STEAM:{steamId})");
                                     networkUser.userName = nameFromRegex;
+
+                                    OnUsernameUpdated?.Invoke();
+                                    OnUsernameUpdated = null;
                                     break;
                                 }
                             }

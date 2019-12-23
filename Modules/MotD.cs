@@ -7,6 +7,7 @@ using Mono.Cecil.Cil;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using System;
+using RoR2.Networking;
 
 namespace R2DSEssentials.Modules
 {
@@ -30,7 +31,7 @@ namespace R2DSEssentials.Modules
 
         protected override void MakeConfig()
         {
-            motd = AddConfig<string>("Message","This server runs: %MODLIST%", $"You can use the following tokens: {string.Join(", ",tokens)}.");
+            motd = AddConfig<string>("Message", "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>\nThis server runs: %MODLIST%", $"You can use the following tokens: {string.Join(", ",tokens)}. You can also use Unity Rich Text.");
         }
 
         protected override void Hook()
@@ -52,7 +53,7 @@ namespace R2DSEssentials.Modules
                 {
                     nameList.Add($"[{entry.Value.Metadata.Name}]");
                 }
-                modList = string.Join(",", nameList);
+                modList = string.Join(", ", nameList);
             }
             return modList;
         }
@@ -67,10 +68,32 @@ namespace R2DSEssentials.Modules
             c.Emit(OpCodes.Ldarg_1);
             c.EmitDelegate<RuntimeILReferenceBag.FastDelegateInvokers.Action<NetworkConnection>>((conn) =>
             {
-               
-                var message = new Chat.SimpleChatMessage() { baseToken = "{0}", paramTokens = new[] { GenerateMotDFormatted(conn) } };
-                SendPrivateMessage(message, conn);
+                if (PluginEntry.Modules.ContainsKey(nameof(RetrieveUsername)) && PluginEntry.Modules[nameof(RetrieveUsername)].IsEnabled)
+                {
+                    var steamId = ServerAuthManager.FindAuthData(conn).steamId.value;
+                    if (RetrieveUsername.UsernamesCache.ContainsKey(steamId))
+                    {
+                        MakeAndSendMotd(conn);
+                    }
+                    else
+                    {
+                        RetrieveUsername.OnUsernameUpdated += () =>
+                        {
+                            MakeAndSendMotd(conn);
+                        };
+                    }
+                }
+                else
+                {
+                    MakeAndSendMotd(conn);
+                }
             });
+        }
+
+        private void MakeAndSendMotd(NetworkConnection connection)
+        {
+            var message = new Chat.SimpleChatMessage { baseToken = "{0}", paramTokens = new[] { GenerateMotDFormatted(connection) } };
+            SendPrivateMessage(message, connection);
         }
 
         private string GenerateMotDFormatted(NetworkConnection conn)
@@ -78,8 +101,8 @@ namespace R2DSEssentials.Modules
             string message = motd.Value;
             if (message.Contains("%STEAM%"))
             {
-                var steam = RoR2.Networking.ServerAuthManager.FindAuthData(conn).steamId;
-                message = message.Replace("%STEAM%", steam.ToString());
+                var steamId = ServerAuthManager.FindAuthData(conn).steamId.ToString();
+                message = message.Replace("%STEAM%", steamId.Length == 17 ? steamId : "No Steam"); // If length isnt 17 the user either didnt send auth data or doesnt have steam.
             }
 
             if (message.Contains("%MODLIST%"))
@@ -89,9 +112,10 @@ namespace R2DSEssentials.Modules
 
             if (message.Contains("%USER%"))
             {
-                if (PluginEntry.Modules.ContainsKey(nameof(RetrieveUsername)) && PluginEntry.Modules[nameof(RetrieveUsername)].IsEnabled) {
-                    var steam = RoR2.Networking.ServerAuthManager.FindAuthData(conn).steamId.value;
-                    message = message.Replace("%USER%", ((RetrieveUsername) PluginEntry.Modules[nameof(RetrieveUsername)]).GetPersonaNameWebAPI(steam));
+                if (PluginEntry.Modules.ContainsKey(nameof(RetrieveUsername)) && PluginEntry.Modules[nameof(RetrieveUsername)].IsEnabled)
+                {
+                    var networkUser = Util.Networking.FindNetworkUserForConnectionServer(conn);
+                    message = message.Replace("%USER%", networkUser.userName);
                 }
                 else
                 {
