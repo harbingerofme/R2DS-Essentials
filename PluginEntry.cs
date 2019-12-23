@@ -106,49 +106,10 @@ namespace R2DSEssentials
                 ModuleAndAttribute temp = ModulesToLoad[1].Dequeue();
                 EnableModule(temp);
             }
-            if(ConvarsToAdd.Count>0)
-                Logger.LogInfo($"Registering {ConvarsToAdd.Count} ConVars");
-            var convarAddMethod = typeof(RoR2.Console).GetMethod("RegisterConVarInternal", BindingFlags.NonPublic | BindingFlags.Instance);
-            while (ConvarsToAdd.Count > 0)
-            {
-                BaseConVar convar = ConvarsToAdd.Dequeue();
-                convarAddMethod.Invoke(RoR2.Console.instance, new object[] { convar });
-            }
 
-            foreach (MethodInfo methodInfo in typeof(ConCommands).GetMethods())
-            {
-                var attr = methodInfo.GetCustomAttribute<RoR2.ConCommandAttribute>();
-                if (attr == null)
-                    continue;
-                ConCommandsToAdd.Enqueue(methodInfo);
-            }
-            if (ConCommandsToAdd.Count > 0)
-                Logger.LogInfo($"Registering {ConCommandsToAdd.Count} ConCommands");
-            var CCcatalog = (IDictionary)typeof(RoR2.Console).GetField("concommandCatalog", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(RoR2.Console.instance);
-            var CCtype = typeof(RoR2.Console).GetNestedType("ConCommand", BindingFlags.NonPublic);
-            while (ConCommandsToAdd.Count > 0) {
-                MethodInfo methodInfo = ConCommandsToAdd.Dequeue();
-                var attr = methodInfo.GetCustomAttribute<RoR2.ConCommandAttribute>();
-                var conCommand = Activator.CreateInstance(CCtype);
-                foreach (FieldInfo field in conCommand.GetType().GetFields())
-                {
-                    switch (field.Name)
-                    {
-                        case "flags":
-                            field.SetValue(conCommand, attr.flags);
-                            break;
-                        case "helpText":
-                            field.SetValue(conCommand, attr.helpText);
-                            break;
-                        case "action":
-                            field.SetValue(conCommand, (RoR2.Console.ConCommandDelegate)Delegate.CreateDelegate(typeof(RoR2.Console.ConCommandDelegate), methodInfo));
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                CCcatalog[attr.commandName.ToLower()] = conCommand;
-            }
+            LoadConVars();
+            LoadConCommands();
+
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Update is called by Unity.")]
@@ -172,6 +133,58 @@ namespace R2DSEssentials
                     Console.Write(keyInfo.KeyChar);
                     _consoleCommand.Append(keyInfo.KeyChar);
                 }
+            }
+        }
+
+        private void LoadConVars()
+        {
+            if (ConvarsToAdd.Count > 0)
+                Logger.LogInfo($"Registering {ConvarsToAdd.Count} ConVars");
+            var convarAddMethod = typeof(RoR2.Console).GetMethod("RegisterConVarInternal", BindingFlags.NonPublic | BindingFlags.Instance);
+            while (ConvarsToAdd.Count > 0)
+            {
+                BaseConVar convar = ConvarsToAdd.Dequeue();
+                convarAddMethod.Invoke(RoR2.Console.instance, new object[] { convar });
+            }
+        }
+
+        private void LoadConCommands()
+        {
+            foreach (MethodInfo methodInfo in typeof(ConCommands).GetMethods())
+            {
+                var attr = methodInfo.GetCustomAttribute<RoR2.ConCommandAttribute>();
+                if (attr == null)
+                    continue;
+                ConCommandsToAdd.Enqueue(methodInfo);
+            }
+
+            if (ConCommandsToAdd.Count > 0)
+                Logger.LogInfo($"Registering {ConCommandsToAdd.Count} ConCommands");
+            var CCcatalog = (IDictionary)typeof(RoR2.Console).GetField("concommandCatalog", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(RoR2.Console.instance);
+            var CCtype = typeof(RoR2.Console).GetNestedType("ConCommand", BindingFlags.NonPublic);
+            while (ConCommandsToAdd.Count > 0)
+            {
+                MethodInfo methodInfo = ConCommandsToAdd.Dequeue();
+                var attr = methodInfo.GetCustomAttribute<RoR2.ConCommandAttribute>();
+                var conCommand = Activator.CreateInstance(CCtype);
+                foreach (FieldInfo field in conCommand.GetType().GetFields())
+                {
+                    switch (field.Name)
+                    {
+                        case "flags":
+                            field.SetValue(conCommand, attr.flags);
+                            break;
+                        case "helpText":
+                            field.SetValue(conCommand, attr.helpText);
+                            break;
+                        case "action":
+                            field.SetValue(conCommand, (RoR2.Console.ConCommandDelegate)Delegate.CreateDelegate(typeof(RoR2.Console.ConCommandDelegate), methodInfo));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                CCcatalog[attr.commandName.ToLower()] = conCommand;
             }
         }
 
