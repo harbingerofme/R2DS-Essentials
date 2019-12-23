@@ -35,6 +35,8 @@ namespace R2DSEssentials
 
         private static readonly StringBuilder _consoleCommand = new StringBuilder();
 
+        public event EventHandler OnFinishLoading;
+
         private PluginEntry()
         {
             Instance = this;
@@ -110,6 +112,7 @@ namespace R2DSEssentials
             LoadConVars();
             LoadConCommands();
 
+            OnFinishLoading(this, null);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Update is called by Unity.")]
