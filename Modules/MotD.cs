@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using BepInEx.Configuration;
 using System;
 using RoR2.Networking;
+using RoR2.ConVar;
 
 namespace R2DSEssentials.Modules
 {
@@ -22,7 +23,8 @@ namespace R2DSEssentials.Modules
         private string modList = "";
         private static readonly string[] tokens = { "%STEAM%", "%MODLIST%", "%USER%", "%TIME%" };
 
-        ConfigEntry<string> motd;
+        ConfigEntry<string> motdConfig;
+        StringConVar motdConVar;
 
         public MotD(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
@@ -31,7 +33,8 @@ namespace R2DSEssentials.Modules
 
         protected override void MakeConfig()
         {
-            motd = AddConfig<string>("Message", "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>\nThis server runs: %MODLIST%", $"You can use the following tokens: {string.Join(", ",tokens)}. You can also use Unity Rich Text.");
+            motdConfig = AddConfig<string>("Message", "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>\nThis server runs: %MODLIST%", $"You can use the following tokens: {string.Join(", ",tokens)}. You can also use Unity Rich Text.");
+            motdConVar = (StringConVar) BindConfig<string>("motd", motdConfig, typeof(StringConVar));
         }
 
         protected override void Hook()
@@ -98,7 +101,7 @@ namespace R2DSEssentials.Modules
 
         private string GenerateMotDFormatted(NetworkConnection conn)
         {
-            string message = motd.Value;
+            string message = motdConVar.value;
             if (message.Contains("%STEAM%"))
             {
                 var steamId = ServerAuthManager.FindAuthData(conn).steamId.ToString();

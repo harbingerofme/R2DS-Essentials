@@ -7,7 +7,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using UnityEngine;
+using RoR2.ConVar;
 using Console = System.Console;
+using System.Collections;
 
 namespace R2DSEssentials
 {
@@ -26,6 +28,7 @@ namespace R2DSEssentials
         private Queue<ModuleAndAttribute>[] ModulesToLoad;
         private readonly Type[] constructorParameters = new Type[] { typeof(string), typeof(string), typeof(bool) };
         private readonly object[] constuctorArgumentArray = new object[3];
+        internal static Queue<BaseConVar> ConvarsToAdd;
 
         internal static PluginEntry Instance;
 
@@ -37,6 +40,7 @@ namespace R2DSEssentials
             Log = Logger;
             Configuration = Config;
             Modules = new Dictionary<string, R2DSEModule>();
+            ConvarsToAdd = new Queue<BaseConVar>();
             ModulesToLoad = new Queue<ModuleAndAttribute>[2];
             ModulesToLoad[0] = new Queue<ModuleAndAttribute>();
             ModulesToLoad[1] = new Queue<ModuleAndAttribute>();
@@ -84,6 +88,39 @@ namespace R2DSEssentials
             {
                 ModuleAndAttribute temp = ModulesToLoad[1].Dequeue();
                 EnableModule(temp);
+            }
+
+            var convarAddMethod = typeof(RoR2.Console).GetMethod("RegisterConVarInternal", BindingFlags.NonPublic | BindingFlags.Instance);
+            while (ConvarsToAdd.Count > 0)
+            {
+                BaseConVar convar = ConvarsToAdd.Dequeue();
+                convarAddMethod.Invoke(RoR2.Console.instance, new object[] { convar });
+            }
+
+            var CCcatalog = (IDictionary)typeof(RoR2.Console).GetField("concommandCatalog", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(RoR2.Console.instance);
+            var CCtype = typeof(RoR2.Console).GetNestedType("ConCommand", BindingFlags.NonPublic);
+            foreach (MethodInfo methodInfo in typeof(ConCommands).GetMethods())
+            {
+                var attr = methodInfo.GetCustomAttribute<RoR2.ConCommandAttribute>();
+                var conCommand = Activator.CreateInstance(CCtype);
+                foreach (FieldInfo field in conCommand.GetType().GetFields())
+                {
+                    switch (field.Name)
+                    {
+                        case "flags":
+                            field.SetValue(conCommand, attr.flags);
+                            break;
+                        case "helpText":
+                            field.SetValue(conCommand, attr.helpText);
+                            break;
+                        case "action":
+                            field.SetValue(conCommand, (RoR2.Console.ConCommandDelegate)Delegate.CreateDelegate(typeof(RoR2.Console.ConCommandDelegate), methodInfo));
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                CCcatalog[attr.commandName.ToLower()] = conCommand;
             }
         }
 
@@ -198,6 +235,22 @@ namespace R2DSEssentials
             ConfigEntry<T> entry = PluginEntry.Configuration.Bind(Name, key, defaultValue, orderedConfigDescription);
             entry.SettingChanged += ReloadHooks;
             return entry;
+        }
+
+        protected BaseConVar BindConfig<T>(string convarName, ConfigEntry<T> configEntry, Type convarType)
+        {
+            if (!typeof(BaseConVar).IsAssignableFrom(convarType))
+            {
+                Debug.LogErrorFormat("Cannot bind {0}! baseconvar is not assignable from it.");
+                return null;
+            }
+            var ctorParamTypes = new Type[] { typeof(string), typeof(RoR2.ConVarFlags), typeof(string), typeof(string) };
+            var ctor = convarType.GetConstructor(ctorParamTypes);
+            var ctorParamFields = new object[] { convarName, RoR2.ConVarFlags.None, configEntry.DefaultValue.ToString(), configEntry.Description };
+            BaseConVar convar = (BaseConVar) ctor.Invoke(ctorParamFields);
+            configEntry.SettingChanged += (obj, args) => { convar.AttemptSetString(((SettingChangedEventArgs)args).ChangedSetting.BoxedValue.ToString());};
+            PluginEntry.ConvarsToAdd.Enqueue(convar);
+            return convar;
         }
     }
 
