@@ -28,7 +28,7 @@ Makes the users appear with their actual steam nickname instead of `???`.
 
 ### ChatCommands
 
-Intercepts chat messages starting with `/` and executes them as though the client send this as a console command to the server. This means a clienvt doesn't need a mod to issue its console commands as they can type them in chat instead.
+Intercepts chat messages starting with `/` and executes them as though the client send this as a console command to the server. This means a client doesn't need a mod to issue its console commands as they can type them in chat instead.
 
 ### ExecConfig
 
