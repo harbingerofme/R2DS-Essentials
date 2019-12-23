@@ -25,14 +25,15 @@ namespace R2DSEssentials
         private static ConfigEntry<bool> DisableWhenGraphicDetected;
         public static Dictionary<string, R2DSEModule> Modules;
 
-        private Queue<ModuleAndAttribute>[] ModulesToLoad;
+        private readonly Queue<ModuleAndAttribute>[] ModulesToLoad;
         private readonly Type[] constructorParameters = new Type[] { typeof(string), typeof(string), typeof(bool) };
         private readonly object[] constuctorArgumentArray = new object[3];
-        internal static Queue<BaseConVar> ConvarsToAdd;
+        private readonly Queue<BaseConVar> ConvarsToAdd;
+        private readonly Queue<MethodInfo> ConCommandsToAdd;
 
         internal static PluginEntry Instance;
 
-        private static StringBuilder _consoleCommand = new StringBuilder();
+        private static readonly StringBuilder _consoleCommand = new StringBuilder();
 
         private PluginEntry()
         {
@@ -41,6 +42,7 @@ namespace R2DSEssentials
             Configuration = Config;
             Modules = new Dictionary<string, R2DSEModule>();
             ConvarsToAdd = new Queue<BaseConVar>();
+            ConCommandsToAdd = new Queue<MethodInfo>();
             ModulesToLoad = new Queue<ModuleAndAttribute>[2];
             ModulesToLoad[0] = new Queue<ModuleAndAttribute>();
             ModulesToLoad[1] = new Queue<ModuleAndAttribute>();
@@ -59,6 +61,21 @@ namespace R2DSEssentials
                 ModuleAttribute customAttr = (ModuleAttribute)type.GetCustomAttributes(typeof(ModuleAttribute), false).FirstOrDefault();
                 if (customAttr != null)
                 {
+                    foreach(FieldInfo field in type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                    {
+                        if (field.FieldType.IsSubclassOf(typeof(BaseConVar)))
+                        {
+                            ConvarsToAdd.Enqueue((BaseConVar) (field.GetValue(null)));
+                        }
+                    }
+                    foreach(MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+                    {
+                        var CCattr = method.GetCustomAttribute<RoR2.ConCommandAttribute>();
+                        if (CCattr != null)
+                        {
+                            ConCommandsToAdd.Enqueue(method);
+                        }
+                    }
                     if (customAttr.target == ModuleAttribute.StartupTarget.Awake)
                     {
                         ModulesToLoad[0].Enqueue(new ModuleAndAttribute() { Module = type, attribute = customAttr});
@@ -89,7 +106,8 @@ namespace R2DSEssentials
                 ModuleAndAttribute temp = ModulesToLoad[1].Dequeue();
                 EnableModule(temp);
             }
-
+            if(ConvarsToAdd.Count>0)
+                Logger.LogInfo($"Registering {ConvarsToAdd.Count} ConVars");
             var convarAddMethod = typeof(RoR2.Console).GetMethod("RegisterConVarInternal", BindingFlags.NonPublic | BindingFlags.Instance);
             while (ConvarsToAdd.Count > 0)
             {
@@ -97,10 +115,19 @@ namespace R2DSEssentials
                 convarAddMethod.Invoke(RoR2.Console.instance, new object[] { convar });
             }
 
-            var CCcatalog = (IDictionary)typeof(RoR2.Console).GetField("concommandCatalog", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(RoR2.Console.instance);
-            var CCtype = typeof(RoR2.Console).GetNestedType("ConCommand", BindingFlags.NonPublic);
             foreach (MethodInfo methodInfo in typeof(ConCommands).GetMethods())
             {
+                var attr = methodInfo.GetCustomAttribute<RoR2.ConCommandAttribute>();
+                if (attr == null)
+                    continue;
+                ConCommandsToAdd.Enqueue(methodInfo);
+            }
+            if (ConCommandsToAdd.Count > 0)
+                Logger.LogInfo($"Registering {ConCommandsToAdd.Count} ConCommands");
+            var CCcatalog = (IDictionary)typeof(RoR2.Console).GetField("concommandCatalog", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(RoR2.Console.instance);
+            var CCtype = typeof(RoR2.Console).GetNestedType("ConCommand", BindingFlags.NonPublic);
+            while (ConCommandsToAdd.Count > 0) {
+                MethodInfo methodInfo = ConCommandsToAdd.Dequeue();
                 var attr = methodInfo.GetCustomAttribute<RoR2.ConCommandAttribute>();
                 var conCommand = Activator.CreateInstance(CCtype);
                 foreach (FieldInfo field in conCommand.GetType().GetFields())
@@ -164,9 +191,10 @@ namespace R2DSEssentials
                 loadedModule.ReloadHooks();
                 Modules.Add(customAttr.Name, loadedModule);
             }
-            catch
+            catch (Exception e)
             {
                 Logger.LogError($"Couldn't load module: {constuctorArgumentArray[0]}");
+                Logger.LogError(e);
             }
         }
 
@@ -176,122 +204,4 @@ namespace R2DSEssentials
             public ModuleAttribute attribute;
         }
     }
-
-    abstract class R2DSEModule
-    {
-        public readonly string Name;
-        public readonly string Description;
-
-        protected ManualLogSource Logger;
-
-        public bool IsEnabled {
-            get { return PreviouslyEnabled; }
-            set
-            {
-                Enabled.Value = value;
-            }
-        }
-
-        protected bool PreviouslyEnabled = false;
-        protected readonly ConfigEntry<bool> Enabled;
-
-        public R2DSEModule(string name, string description, bool defaultEnabled)
-        {
-            Name = name;
-            Description = description;
-            Enabled = AddConfig("_Enabled", defaultEnabled, Description);
-            MakeConfig();
-            Logger = PluginEntry.Log;
-        }
-
-        public void ReloadHooks(object _ = null, System.EventArgs __ = null)
-        {
-            if (PreviouslyEnabled)
-            {
-                UnHook();
-                PreviouslyEnabled = false;
-            }
-            if (Enabled.Value)
-            {
-                Hook();
-                PreviouslyEnabled = true;
-            }
-        }
-
-        protected abstract void UnHook();
-        protected abstract void Hook();
-
-        protected abstract void MakeConfig();
-
-
-        protected ConfigEntry<T> AddConfig<T>(string key, T defaultValue, string description)
-        {
-            return AddConfig(key, defaultValue, new ConfigDescription(description));
-        }
-
-        protected ConfigEntry<T> AddConfig<T>(string key, T defaultValue, ConfigDescription configDescription)
-        {
-            ConfigDescription orderedConfigDescription = new ConfigDescription(configDescription.Description, configDescription.AcceptableValues);
-            ConfigEntry<T> entry = PluginEntry.Configuration.Bind(Name, key, defaultValue, orderedConfigDescription);
-            entry.SettingChanged += ReloadHooks;
-            return entry;
-        }
-
-        protected BaseConVar BindConfig<T>(string convarName, ConfigEntry<T> configEntry, Type convarType)
-        {
-            if (!typeof(BaseConVar).IsAssignableFrom(convarType))
-            {
-                Debug.LogErrorFormat("Cannot bind {0}! baseconvar is not assignable from it.");
-                return null;
-            }
-            var ctorParamTypes = new Type[] { typeof(string), typeof(RoR2.ConVarFlags), typeof(string), typeof(string) };
-            var ctor = convarType.GetConstructor(ctorParamTypes);
-            var ctorParamFields = new object[] { convarName, RoR2.ConVarFlags.None, configEntry.DefaultValue.ToString(), configEntry.Description };
-            BaseConVar convar = (BaseConVar) ctor.Invoke(ctorParamFields);
-            configEntry.SettingChanged += (obj, args) => { convar.AttemptSetString(((SettingChangedEventArgs)args).ChangedSetting.BoxedValue.ToString());};
-            PluginEntry.ConvarsToAdd.Enqueue(convar);
-            return convar;
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    internal class ModuleAttribute : Attribute
-    {
-        public readonly string Name;
-        public readonly bool DefaultEnabled;
-        public readonly string Description;
-        public StartupTarget target;
-        public ModuleAttribute(string name, string description, bool defaultEnabled, StartupTarget target = StartupTarget.Awake)
-        {
-            Name = name;
-            DefaultEnabled = defaultEnabled;
-            Description = description;
-            this.target = target;
-        }
-
-        public enum StartupTarget
-        {
-            Awake,
-            Start
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-    internal class ModuleDependency : Attribute
-    {
-        public readonly string Dependency;
-        public readonly DependencyType Type;
-        public ModuleDependency(string dependency, DependencyType type = DependencyType.Hard)
-        {
-            Dependency = dependency;
-            Type = type;
-        }
-
-        public enum DependencyType
-        {
-            Hard,
-            Soft
-        }
-    }
-
 }
