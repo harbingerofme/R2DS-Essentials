@@ -17,7 +17,7 @@ namespace R2DSEssentials
     [BepInPlugin(ModGuid, ModName, ModVer)]
     class PluginEntry : BaseUnityPlugin
     {
-        private const string ModVer = "0.0.1";
+        private const string ModVer = "1.0.0";
         private const string ModName = "R2DSE";
         public const string ModGuid = "com.HarbAndDeath." + ModName;
         public static ManualLogSource Log;
