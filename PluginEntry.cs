@@ -147,7 +147,13 @@ namespace R2DSEssentials
 
         protected ManualLogSource Logger;
 
-        public bool IsEnabled { get { return PreviouslyEnabled; } }
+        public bool IsEnabled {
+            get { return PreviouslyEnabled; }
+            set
+            {
+                Enabled.Value = value;
+            }
+        }
 
         protected bool PreviouslyEnabled = false;
         protected readonly ConfigEntry<bool> Enabled;
