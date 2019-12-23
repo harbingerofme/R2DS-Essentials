@@ -35,13 +35,14 @@ namespace R2DSEssentials
 
         private static readonly StringBuilder _consoleCommand = new StringBuilder();
 
-        public event EventHandler OnFinishLoading;
+        public event Action OnFinishLoading;
 
         private PluginEntry()
         {
             Instance = this;
             Log = Logger;
             Configuration = Config;
+            Configuration = new ConfigFile(Paths.ConfigPath + "\\RDSE.cfg", true);
             Modules = new Dictionary<string, R2DSEModule>();
             ConvarsToAdd = new Queue<BaseConVar>();
             ConCommandsToAdd = new Queue<MethodInfo>();
@@ -112,7 +113,7 @@ namespace R2DSEssentials
             LoadConVars();
             LoadConCommands();
 
-            OnFinishLoading(this, null);
+            OnFinishLoading?.Invoke();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Update is called by Unity.")]

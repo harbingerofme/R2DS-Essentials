@@ -1,6 +1,4 @@
 ﻿using BepInEx.Configuration;
-using RoR2;
-using System;
 using Console = RoR2.Console;
 
 namespace R2DSEssentials.Modules
@@ -21,12 +19,12 @@ namespace R2DSEssentials.Modules
 
         protected override void Hook()
         {
-            PluginEntry.Instance.OnFinishLoading += Go;
+            PluginEntry.Instance.OnFinishLoading += Execute;
         }
 
         protected override void UnHook()
         {
-            PluginEntry.Instance.OnFinishLoading -= Go;
+            PluginEntry.Instance.OnFinishLoading -= Execute;
         }
 
         protected override void MakeConfig()
@@ -34,12 +32,12 @@ namespace R2DSEssentials.Modules
             _configFileName = AddConfig("Server CFG Filename", "server", "Name of the CFG File to load at the startup of the server. Don't include the extension. Example : server");
         }
 
-        internal void Go(object _, EventArgs __)
+        private void Execute()
         {
             if (IsEnabled)
                 Console.instance.SubmitCmd(null, $"exec {_configFileName.Value}");
             else
-                Logger.LogWarning("ExecConfig: Go() called while not enabled!");
+                Logger.LogWarning("ExecConfig: Execute() called while not enabled!");
         }
     }
 }
