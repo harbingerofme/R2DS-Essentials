@@ -41,7 +41,7 @@ namespace R2DSEssentials
             ModulesToLoad[0] = new Queue<ModuleAndAttribute>();
             ModulesToLoad[1] = new Queue<ModuleAndAttribute>();
 
-            DisableWhenGraphicDetected = Configuration.Bind("_R2DSE", "DisableWhenGraphicsDetected", true, "Disable the plugin when game graphics are detected.");
+            DisableWhenGraphicDetected = Configuration.Bind("_R2DSE", "Disable When Graphics Detected", true, "Disable the plugin when game graphics are detected.");
 
             if (!Application.isBatchMode && DisableWhenGraphicDetected.Value)
             {
