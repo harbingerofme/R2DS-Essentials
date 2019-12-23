@@ -20,11 +20,15 @@ namespace R2DSEssentials.Modules
         public const string ModuleDescription = "Sends a configurable message to clients upon joining";
         public const bool   DefaultEnabled = true;
 
+
+        private const string _defaultValue = "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>\nThis server runs: %MODLIST%";
+        private const string _defaultHelp = "You can use the following tokens: %STEAM%, %MODLIST%, %USER%, %TIME%. You can also use Unity Rich Text.";
+
         private string modList = "";
-        private static readonly string[] tokens = { "%STEAM%", "%MODLIST%", "%USER%", "%TIME%" };
+        
+        private static readonly ConfigConVar<string> MotdConVar = new ConfigConVar<string>("motd",ConVarFlags.None, _defaultValue, _defaultHelp);
 
         ConfigEntry<string> motdConfig;
-        StringConVar motdConVar;
 
         public MotD(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
@@ -33,8 +37,8 @@ namespace R2DSEssentials.Modules
 
         protected override void MakeConfig()
         {
-            motdConfig = AddConfig<string>("Message", "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>\nThis server runs: %MODLIST%", $"You can use the following tokens: {string.Join(", ",tokens)}. You can also use Unity Rich Text.");
-            motdConVar = (StringConVar) BindConfig<string>("motd", motdConfig, typeof(StringConVar));
+            motdConfig = AddConfig<string>("Message", _defaultValue, _defaultHelp);
+            MotdConVar.config = motdConfig;
         }
 
         protected override void Hook()
@@ -101,7 +105,7 @@ namespace R2DSEssentials.Modules
 
         private string GenerateMotDFormatted(NetworkConnection conn)
         {
-            string message = motdConVar.value;
+            string message = MotdConVar.GetString();
             if (message.Contains("%STEAM%"))
             {
                 var steamId = ServerAuthManager.FindAuthData(conn).steamId.ToString();
