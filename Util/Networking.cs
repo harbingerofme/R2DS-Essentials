@@ -17,5 +17,18 @@ namespace R2DSEssentials.Util
 
             return null;
         }
+
+        internal static NetworkConnection FindNetworkConnectionFromNetworkUser(NetworkUser networkUser)
+        {
+            foreach (var connection in NetworkServer.connections)
+            {
+                if (networkUser.connectionToClient == connection)
+                {
+                    return connection;
+                }
+            }
+
+            return null;
+        }
     }
 }
