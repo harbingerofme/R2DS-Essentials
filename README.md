@@ -1,10 +1,11 @@
 # R2DS-Essentials
-
 **Risk of Rain 2 Dedicated Server Essentials** (**R2DSE**) is a mod containing a bunch of modules for any self-respecting dedicated server.
 
 Intended to work for all clients, including vanilla, although obviously other mods you have installed may invalidate this.
 
 Track update progress, get support and suggest new features over at the [R2DSE discord](https://discord.gg/yTfsMWP).
+
+**Mainteners : Harb and iDeath**
 
 ## Main Features
 
