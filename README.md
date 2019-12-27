@@ -10,6 +10,7 @@ Track update progress, get support and suggest new features over at the [R2DSE d
 
 - Let you choose to enable and disable what modules you want from the config file located in `BepInEx\config`.
 - Interactible Server Console to execute commands directly from the console window!
+- Remove useless spam (`Filename: C:\buildslave...` and `Fallback...`) for easier monitoring.
 - (almost) completely modular!
 - Doesn't need a full r2api installed. *(Just it's `MMHOOK` file will do, an update is usually available for this on patch day.)*
 - Helper Functions exposed, so other mods can depend on R2DSE.
