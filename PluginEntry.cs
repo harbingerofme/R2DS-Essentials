@@ -42,7 +42,7 @@ namespace R2DSEssentials
             Instance = this;
             Log = Logger;
             Configuration = Config;
-            Configuration = new ConfigFile(Paths.ConfigPath + "\\RDSE.cfg", true);
+            Configuration = new ConfigFile(Paths.ConfigPath + "\\R2DSE.cfg", true);
             Modules = new Dictionary<string, R2DSEModule>();
             ConvarsToAdd = new Queue<BaseConVar>();
             ConCommandsToAdd = new Queue<MethodInfo>();
