@@ -16,6 +16,11 @@
     <None Remove="R2DS-Essentials.dll" />
     <None Remove="README.md" />
     <None Remove="start_server.bat" />
+    <None Remove="UnityPlayerRemoveGarbage.dll" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="NativeLibrary\UnityPlayerRemoveGarbage.dll" />
   </ItemGroup>
 
   <ItemGroup>
