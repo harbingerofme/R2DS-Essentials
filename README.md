@@ -45,4 +45,4 @@ Hides the IP from the console output window, mostly for preventing privacy leaks
   
 ## Planned features
 
-- Stop that line spam about fallback handlers and the unity buildslave.
+- ?
