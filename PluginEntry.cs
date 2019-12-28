@@ -1,15 +1,17 @@
-﻿using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Logging;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
+using MonoMod.RuntimeDetour;
 using UnityEngine;
+using UnityEngine.Networking;
 using RoR2.ConVar;
-using Console = System.Console;
-using System.Collections;
+
 
 namespace R2DSEssentials
 {
@@ -50,7 +52,7 @@ namespace R2DSEssentials
             ModulesToLoad[0] = new Queue<ModuleAndAttribute>();
             ModulesToLoad[1] = new Queue<ModuleAndAttribute>();
 
-            NativeWrapper.InjectRemoveGarbage();
+            FixVanilla.Init();
 
             DisableWhenGraphicDetected = Configuration.Bind("_R2DSE", "Disable When Graphics Detected", true, "Disable the plugin when game graphics are detected.");
 
