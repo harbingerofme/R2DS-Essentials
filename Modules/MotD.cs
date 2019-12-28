@@ -21,7 +21,7 @@ namespace R2DSEssentials.Modules
         public const bool   DefaultEnabled = true;
 
 
-        private const string _defaultValue = "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>\nThis server runs: %MODLIST%";
+        private const string _defaultValue = "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>. This server runs: %MODLIST%";
         private const string _defaultHelp = "You can use the following tokens: %STEAM%, %MODLIST%, %USER%, %TIME%. You can also use Unity Rich Text.";
 
         private string modList = "";
