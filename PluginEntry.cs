@@ -7,9 +7,7 @@ using System.Text;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
-using MonoMod.RuntimeDetour;
 using UnityEngine;
-using UnityEngine.Networking;
 using RoR2.ConVar;
 
 
@@ -134,6 +132,16 @@ namespace R2DSEssentials
                     Console.WriteLine();
                     RoR2.Console.instance.SubmitCmd(null, _consoleCommand.ToString());
                     _consoleCommand.Clear();
+                }
+                else if (keyInfo.Key == ConsoleKey.Backspace)
+                {
+                    Console.CursorLeft--;
+                    Console.Write(' ');
+                    Console.CursorLeft--;
+                    if (_consoleCommand.Length >= 1)
+                    {
+                        _consoleCommand.Remove(_consoleCommand.Length - 1, 1);
+                    }
                 }
                 else
                 {

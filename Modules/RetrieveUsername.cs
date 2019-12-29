@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using RoR2;
 using Facepunch.Steamworks;
-using RoR2.Networking;
 using UnityEngine.Networking;
 
 namespace R2DSEssentials.Modules
@@ -30,14 +29,12 @@ namespace R2DSEssentials.Modules
         {
             On.RoR2.NetworkPlayerName.GetResolvedName += OnGetResolvedName;
             Run.OnServerGameOver += EmptyCachesOnGameOver;
-            GameNetworkManager.onClientDisconnectGlobal += RemoveClientCache;
         }
 
         protected override void UnHook()
         {
             On.RoR2.NetworkPlayerName.GetResolvedName -= OnGetResolvedName;
             Run.OnServerGameOver -= EmptyCachesOnGameOver;
-            GameNetworkManager.onClientDisconnectGlobal -= RemoveClientCache;
         }
 
         protected override void MakeConfig()
@@ -58,17 +55,6 @@ namespace R2DSEssentials.Modules
         {
             UsernamesCache.Clear();
             _requestCache.Clear();
-        }
-
-        private void RemoveClientCache(NetworkConnection networkConnection)
-        {
-            if (networkConnection is SteamNetworkConnection steamNetworkConnection)
-            {
-                var steamId = steamNetworkConnection.steamId.value;
-
-                UsernamesCache.Remove(steamId);
-                _requestCache.Remove(steamId);
-            }
         }
 
         // ReSharper disable once InconsistentNaming
@@ -127,6 +113,11 @@ namespace R2DSEssentials.Modules
                                 {
                                     Logger.LogInfo($"New player : {nameFromRegex} connected. (STEAM:{steamId})");
                                     networkUser.userName = nameFromRegex;
+
+                                    // Sync with other players by forcing dirty syncVar ?
+                                    var tmp = networkUser.Network_id;
+                                    networkUser.Network_id = new NetworkUserId();
+                                    networkUser.Network_id = tmp;
 
                                     OnUsernameUpdated?.Invoke();
                                     OnUsernameUpdated = null;
