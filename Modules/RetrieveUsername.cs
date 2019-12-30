@@ -115,9 +115,8 @@ namespace R2DSEssentials.Modules
                                     networkUser.userName = nameFromRegex;
 
                                     // Sync with other players by forcing dirty syncVar ?
-                                    var tmp = networkUser.Network_id;
-                                    networkUser.Network_id = new NetworkUserId();
-                                    networkUser.Network_id = tmp;
+                                    SyncNetworkUserVarTest(networkUser);
+
 
                                     OnUsernameUpdated?.Invoke();
                                     OnUsernameUpdated = null;
@@ -130,6 +129,20 @@ namespace R2DSEssentials.Modules
             }
 
             webRequest.Dispose();
+        }
+
+        private static void SyncNetworkUserVarTest(NetworkUser currentNetworkUser)
+        {
+            foreach (var otherUser in NetworkUser.readOnlyInstancesList)
+            {
+                if (currentNetworkUser.userName != otherUser.userName)
+                {
+                    var tmp = currentNetworkUser.Network_id;
+                    currentNetworkUser.Network_id = otherUser.Network_id;
+                    currentNetworkUser.Network_id = tmp;
+                    break;
+                }
+            }
         }
     }
 }

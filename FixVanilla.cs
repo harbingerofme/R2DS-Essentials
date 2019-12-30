@@ -1,4 +1,5 @@
 ﻿using Facepunch.Steamworks;
+using RoR2;
 using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -11,10 +12,28 @@ namespace R2DSEssentials
         {
             NativeWrapper.InjectRemoveGarbage();
 
+            On.RoR2.Chat.CCSay += ServerSay;
+
             On.LeTai.Asset.TranslucentImage.TranslucentImage.Start += FixCameraErrorSpam;
             On.LeTai.Asset.TranslucentImage.TranslucentImage.LateUpdate += FixCameraErrorSpamPartTwo;
 
             On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += EndAuthOnClientDisconnect;
+        }
+
+        private static void ServerSay(On.RoR2.Chat.orig_CCSay orig, ConCommandArgs args)
+        {
+            if (args.sender == null)
+            {
+                args.CheckArgumentCount(1);
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage
+                {
+                    baseToken = $"<color=red>Server:</color> {args[0]}"
+                });
+            }
+            else
+            {
+                orig(args);
+            }
         }
 
         private static void FixCameraErrorSpam(On.LeTai.Asset.TranslucentImage.TranslucentImage.orig_Start orig, LeTai.Asset.TranslucentImage.TranslucentImage self)
