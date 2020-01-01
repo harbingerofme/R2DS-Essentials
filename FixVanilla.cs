@@ -1,4 +1,7 @@
-﻿using Facepunch.Steamworks;
+﻿using System;
+using Facepunch.Steamworks;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using RoR2;
 using RoR2.Networking;
 using UnityEngine;
@@ -12,7 +15,7 @@ namespace R2DSEssentials
         {
             NativeWrapper.InjectRemoveGarbage();
 
-            On.RoR2.Chat.CCSay += ServerSay;
+            IL.RoR2.Chat.CCSay += ServerSay;
 
             On.LeTai.Asset.TranslucentImage.TranslucentImage.Start += FixCameraErrorSpam;
             On.LeTai.Asset.TranslucentImage.TranslucentImage.LateUpdate += FixCameraErrorSpamPartTwo;
@@ -20,20 +23,39 @@ namespace R2DSEssentials
             On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += EndAuthOnClientDisconnect;
         }
 
-        private static void ServerSay(On.RoR2.Chat.orig_CCSay orig, ConCommandArgs args)
+        private static void ServerSay(ILContext il)
         {
-            if (args.sender == null)
+            var cursor = new ILCursor(il);
+
+            cursor.GotoNext
+            (
+                i => i.MatchRet()
+            );
+
+            cursor.Emit(OpCodes.Ldarg, 0);
+            cursor.EmitDelegate<Action<ConCommandArgs>>(args =>
             {
-                args.CheckArgumentCount(1);
-                Chat.SendBroadcastChat(new Chat.SimpleChatMessage
+                if (args.sender == null)
                 {
-                    baseToken = $"<color=red>Server:</color> {args[0]}"
-                });
-            }
-            else
-            {
-                orig(args);
-            }
+                    args.CheckArgumentCount(1);
+                    Chat.SendBroadcastChat(new Chat.SimpleChatMessage
+                    {
+                        baseToken = $"<color=red>Server:</color> {args[0]}"
+                    });
+                }
+            });
+
+            cursor.GotoPrev
+            (
+                i => i.MatchLdarg(0)
+            );
+            var label = cursor.MarkLabel();
+
+            cursor.GotoPrev
+            (
+                i => i.MatchBrfalse(out _)
+            );
+            cursor.Next.Operand = label;
         }
 
         private static void FixCameraErrorSpam(On.LeTai.Asset.TranslucentImage.TranslucentImage.orig_Start orig, LeTai.Asset.TranslucentImage.TranslucentImage self)
