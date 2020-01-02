@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using RoR2;
 using Facepunch.Steamworks;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace R2DSEssentials.Modules
@@ -117,7 +118,6 @@ namespace R2DSEssentials.Modules
                                     // Sync with other players by forcing dirty syncVar ?
                                     SyncNetworkUserVarTest(networkUser);
 
-
                                     OnUsernameUpdated?.Invoke();
                                     OnUsernameUpdated = null;
                                     break;
@@ -133,16 +133,19 @@ namespace R2DSEssentials.Modules
 
         private static void SyncNetworkUserVarTest(NetworkUser currentNetworkUser)
         {
-            foreach (var otherUser in NetworkUser.readOnlyInstancesList)
-            {
-                if (currentNetworkUser.userName != otherUser.userName)
-                {
-                    var tmp = currentNetworkUser.Network_id;
-                    currentNetworkUser.Network_id = otherUser.Network_id;
-                    currentNetworkUser.Network_id = tmp;
-                    break;
-                }
-            }
+            var tmp = currentNetworkUser.Network_id;
+            var nid = NetworkUserId.FromIp("000.000.000.1", 255);
+            currentNetworkUser.Network_id = nid;
+            currentNetworkUser.SetDirtyBit(1u);
+            PluginEntry.Instance.StartCoroutine(UpdateUsernameDelayed(currentNetworkUser, tmp));
+        }
+
+        private static IEnumerator UpdateUsernameDelayed(NetworkUser userToUpdate, NetworkUserId realId)
+        {
+            yield return new WaitForSeconds(1);
+
+            userToUpdate.Network_id = realId;
+            userToUpdate.SetDirtyBit(1u);
         }
     }
 }

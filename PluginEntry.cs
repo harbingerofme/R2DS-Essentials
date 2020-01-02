@@ -121,9 +121,6 @@ namespace R2DSEssentials
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Update is called by Unity.")]
         private void Update()
         {
-            if (!Application.isBatchMode)
-                return;
-
             if (Console.KeyAvailable)
             {
                 var keyInfo = Console.ReadKey();
