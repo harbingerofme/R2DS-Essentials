@@ -9,6 +9,7 @@ using BepInEx.Configuration;
 using System;
 using RoR2.Networking;
 using RoR2.ConVar;
+using UnityEngine;
 
 namespace R2DSEssentials.Modules
 {
@@ -36,6 +37,8 @@ namespace R2DSEssentials.Modules
         private const int _defaultMOTHTimeValue = 4*60;
         private const string _MOTHTimeHelp = "The amount of minutes between MOTH messages.";
 
+        private const string _MOTSHelp = @"Replace with """" to ignore this.";
+
         private string modList = "";
         
         private static readonly ConfigConVar<string> MotdConVar = new ConfigConVar<string>("motd",ConVarFlags.None, _defaultMOTDValue, _MOTDHelp);
@@ -50,6 +53,8 @@ namespace R2DSEssentials.Modules
         ConfigEntry<int> motrValConfig;
         ConfigEntry<int> mothValConfig;
 
+        private static readonly Dictionary<string, ConfigEntry<string>> stageMessages = new Dictionary<string, ConfigEntry<string>>();
+
         public MotD(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
         }
@@ -59,6 +64,9 @@ namespace R2DSEssentials.Modules
         {
             motdConfig = AddConfigConvar<string>("Message of the day", _defaultMOTDValue, _MOTDHelp, MotdConVar);
             motrConfig = AddConfigConvar<string>("Message of the round", _defaultMOTRValue, _MOTRHelp, MotrConVar);
+            mothConfig = AddConfigConvar<string>("Message of the hour", _defaultMOTRValue, _MOTRHelp, MotrConVar);
+            motrValConfig = AddConfigConvar<int>("Rounds per message", _defaultMOTRRoundsValue, _MOTRRoundsHelp, MotrValConVar);
+            mothValConfig = AddConfigConvar<int>("Rounds per message", _defaultMOTHTimeValue, _MOTHTimeHelp, MothValConVar);
         }
 
         private ConfigEntry<t> AddConfigConvar<t>(string key, t defaultValue, string description, ConfigConVar<t> conVar)
@@ -68,6 +76,73 @@ namespace R2DSEssentials.Modules
             conVar.config = entry;
             return entry;
         }
+
+        [ConCommand(commandName ="mots", flags = ConVarFlags.None, helpText = "mots <stage> <message>. " + _MOTDHelp)]
+        private static void cc_mots(ConCommandArgs args)
+        {
+            args.CheckArgumentCount(1);
+            if (!PluginEntry.Modules[ModuleName].IsEnabled)
+            {
+                Debug.LogWarning("The Motd module is not enabled.");
+            }
+            var MOTD = (MotD) PluginEntry.Modules[ModuleName];
+            string stage = args.GetArgString(0).ToLower();
+            if (args.Count < 2)
+            {
+                string mots = MOTD.GetMotS(args.GetArgString(0));
+                if(mots == "")
+                {
+                    Debug.LogFormat("Stage '{0}' does not have any message set.",stage);
+                }
+                else
+                {
+                    Debug.Log(mots);
+                }
+                return;
+            }
+            string newMessage = Util.Console.MergeArgs(args, 2);
+            MOTD.SetMotS(stage, newMessage);
+            Debug.Log("Something something mots set.");
+        }
+
+        public string GetMotS(string stageName)
+        {
+            string name = stageName.ToLower();
+            if (stageMessages.ContainsKey(name))
+                return stageMessages[name].Value;
+            var configDef = new ConfigDefinition(ModuleName, name);
+            if (PluginEntry.Configuration.ContainsKey(configDef))
+            {
+                stageMessages[name] = PluginEntry.Configuration.Bind<string>(configDef,"");
+                return stageMessages[name].Value;
+            }
+            return "";
+        }
+
+        public void SetMotS(string stageName,string newArgs)
+        {
+            string name = stageName.ToLower();
+            if (stageMessages.ContainsKey(name))
+            {
+                stageMessages[name].Value = newArgs;
+            }
+            else
+            {
+                var configDef = new ConfigDefinition(ModuleName, name);
+                if (PluginEntry.Configuration.ContainsKey(configDef))
+                {
+                    stageMessages[name] = PluginEntry.Configuration.Bind<string>(configDef, "");
+                    stageMessages[name].Value = newArgs;
+                }
+                else
+                {
+                    ConfigEntry<string> entry = PluginEntry.Configuration.Bind<string>(configDef, "", new ConfigDescription(_MOTSHelp));
+                    entry.Value = newArgs;
+                    stageMessages[name] = entry;
+                }
+            }
+        }
+
 
         protected override void Hook()
         {
