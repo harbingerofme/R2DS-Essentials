@@ -21,14 +21,34 @@ namespace R2DSEssentials.Modules
         public const bool   DefaultEnabled = true;
 
 
-        private const string _defaultValue = "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>. This server runs: %MODLIST%";
-        private const string _defaultHelp = "You can use the following tokens: %STEAM%, %MODLIST%, %USER%, %TIME%. You can also use Unity Rich Text.";
+        private const string _defaultMOTDValue = "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>. This server runs: %MODLIST%";
+        private const string _MOTDHelp = "You can use the following tokens: %STEAM%, %MODLIST%, %USER%, %TIME%. You can also use Unity Rich Text.";
+
+        private const string _defaultMOTRValue = "<style=cIsHealing>This is a round message!</style>.";
+        private const string _MOTRHelp = _MOTDHelp;//Sue me.
+
+        private const int _defaultMOTRRoundsValue = 0;
+        private const string _MOTRRoundsHelp = "When this is set to any whole positive number, the MOTR message will dispaly when the rounds are divided by this number.";//find a better way to explain modulo.
+
+        private const string _defaultMOTHValue = "<style=cDeath>It's been 4 hours!</style>";
+        private const string _MOTHHelp = _MOTDHelp;
+
+        private const int _defaultMOTHTimeValue = 4*60;
+        private const string _MOTHTimeHelp = "The amount of minutes between MOTH messages.";
 
         private string modList = "";
         
-        private static readonly ConfigConVar<string> MotdConVar = new ConfigConVar<string>("motd",ConVarFlags.None, _defaultValue, _defaultHelp);
+        private static readonly ConfigConVar<string> MotdConVar = new ConfigConVar<string>("motd",ConVarFlags.None, _defaultMOTDValue, _MOTDHelp);
+        private static readonly ConfigConVar<string> MotrConVar = new ConfigConVar<string>("motr", ConVarFlags.None, _defaultMOTRValue, _MOTRHelp);
+        private static readonly ConfigConVar<string> MothConVar = new ConfigConVar<string>("moth", ConVarFlags.None, _defaultMOTHValue, _MOTHHelp);
+        private static readonly ConfigConVar<int> MotrValConVar = new ConfigConVar<int>("motr_value", ConVarFlags.None, "0", _MOTRRoundsHelp);
+        private static readonly ConfigConVar<int> MothValConVar = new ConfigConVar<int>("moth_value", ConVarFlags.None, "0", _MOTHTimeHelp);
 
         ConfigEntry<string> motdConfig;
+        ConfigEntry<string> motrConfig;
+        ConfigEntry<string> mothConfig;
+        ConfigEntry<int> motrValConfig;
+        ConfigEntry<int> mothValConfig;
 
         public MotD(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
@@ -37,8 +57,16 @@ namespace R2DSEssentials.Modules
 
         protected override void MakeConfig()
         {
-            motdConfig = AddConfig<string>("Message", _defaultValue, _defaultHelp);
-            MotdConVar.config = motdConfig;
+            motdConfig = AddConfigConvar<string>("Message of the day", _defaultMOTDValue, _MOTDHelp, MotdConVar);
+            motrConfig = AddConfigConvar<string>("Message of the round", _defaultMOTRValue, _MOTRHelp, MotrConVar);
+        }
+
+        private ConfigEntry<t> AddConfigConvar<t>(string key, t defaultValue, string description, ConfigConVar<t> conVar)
+        {
+            var entry = AddConfig(key, defaultValue, description);
+            conVar.defaultValue = entry.GetSerializedValue();
+            conVar.config = entry;
+            return entry;
         }
 
         protected override void Hook()
