@@ -54,6 +54,7 @@ namespace R2DSEssentials.Modules
         ConfigEntry<int> mothValConfig;
 
         private int lastStageCount;
+        private DateTime time;
 
         private static readonly Dictionary<string, ConfigEntry<string>> stageMessages = new Dictionary<string, ConfigEntry<string>>();
 
@@ -149,9 +150,23 @@ namespace R2DSEssentials.Modules
 
         protected override void Hook()
         {
+            time = DateTime.Now.AddMinutes(mothValConfig.Value);
+
+
             IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal += messageOnPlayerJoin;
             Stage.onServerStageBegin += MotrAndMots;
             Run.onRunStartGlobal += ResetStageCount;
+            RoR2Application.onFixedUpdate += RoR2Application_onFixedUpdate;
+
+        }
+
+        private void RoR2Application_onFixedUpdate()
+        {
+            if (mothValConfig.Value > 0 && mothConfig.Value != "" && time<DateTime.Now)
+            {
+                time = time.AddMinutes(mothValConfig.Value);
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage() { baseToken = "{0}", paramTokens = new string[] { mothConfig.Value } });
+            }
         }
 
         private void ResetStageCount(Run obj)
@@ -181,6 +196,7 @@ namespace R2DSEssentials.Modules
             IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal -= messageOnPlayerJoin;
             Stage.onServerStageBegin -= MotrAndMots;
             Run.onRunStartGlobal -= ResetStageCount;
+            RoR2Application.onFixedUpdate -= RoR2Application_onFixedUpdate;
         }
 
         private string GetModList()
