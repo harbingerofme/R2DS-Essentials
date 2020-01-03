@@ -53,10 +53,13 @@ namespace R2DSEssentials.Modules
         ConfigEntry<int> motrValConfig;
         ConfigEntry<int> mothValConfig;
 
+        private int lastStageCount;
+
         private static readonly Dictionary<string, ConfigEntry<string>> stageMessages = new Dictionary<string, ConfigEntry<string>>();
 
         public MotD(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
+            lastStageCount = -1;
         }
 
 
@@ -146,12 +149,38 @@ namespace R2DSEssentials.Modules
 
         protected override void Hook()
         {
-            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal += GameNetworkManager_OnServerAddPlayerInternal1;
+            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal += messageOnPlayerJoin;
+            Stage.onServerStageBegin += MotrAndMots;
+            Run.onRunStartGlobal += ResetStageCount;
+        }
+
+        private void ResetStageCount(Run obj)
+        {
+           lastStageCount = -1;
+        }
+
+        private void MotrAndMots(Stage obj)
+        {
+            if(motrConfig.Value!= "" && motrValConfig.Value>0 && Run.instance && !(Run.instance.stageClearCount != lastStageCount))
+            {
+                lastStageCount = Run.instance.stageClearCount;
+                if (lastStageCount % motrValConfig.Value == 0)
+                {
+                    Chat.SendBroadcastChat(new Chat.SimpleChatMessage() { baseToken = "{0}", paramTokens = new string[] { motrConfig.Value } });
+                }
+            }
+            string mots = GetMotS(obj.sceneDef.baseSceneName);
+            if (mots != "")
+            {
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage() { baseToken = "{0}", paramTokens = new string[] { mots } });
+            }
         }
 
         protected override void UnHook()
         {
-            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal -= GameNetworkManager_OnServerAddPlayerInternal1;
+            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal -= messageOnPlayerJoin;
+            Stage.onServerStageBegin -= MotrAndMots;
+            Run.onRunStartGlobal -= ResetStageCount;
         }
 
         private string GetModList()
@@ -168,7 +197,7 @@ namespace R2DSEssentials.Modules
             return modList;
         }
 
-        private void GameNetworkManager_OnServerAddPlayerInternal1(ILContext il)
+        private void messageOnPlayerJoin(ILContext il)
         {
             ILCursor c = new ILCursor(il);
             c.GotoNext(MoveType.After,
