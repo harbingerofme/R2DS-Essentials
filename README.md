@@ -16,17 +16,22 @@ Track update progress, get support and suggest new features over at the [R2DSE d
 - Doesn't need a full r2api installed. *(Just it's `MMHOOK` file will do, an update is usually available for this on patch day.)*
 - Helper Functions exposed, so other mods can depend on R2DSE.
 
-### Installation:
+### Installation
 
 1. Make sure you grab at least the `MMHOOK_Assembly-CSharp.dll` file from the latest R2API release and put it in your `BepInEx/Plugins` folder.
 2. Drop `R2DS-Essentials.dll` in your `BepInEx/Plugins` folder.
+
+### Optimal Usage
+
+If you have installed the Dedicated Server Tool through Steam, you'll have to: 
+- Launch it through the Risk of Rain 2.exe directly to restore the console colors
+- Change `doorstop_config.ini` `redirectOutputLog` to `true` to remove duplicate output lines in the server console.
 
 ## Modules
 
 ### RetrieveUsername
 
 Makes the users appear with their actual steam nickname instead of `???`.
-
 
 ### ChatCommands
 
