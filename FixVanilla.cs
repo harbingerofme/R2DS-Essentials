@@ -82,7 +82,7 @@ namespace R2DSEssentials
                 if (steamId != 0)
                 {
                     PluginEntry.Log.LogInfo($"Ending AuthSession with : {nu.userName} ({steamId})");
-                    Server.Instance.Auth.EndSession(steamId);
+                    Server.Instance?.Auth.EndSession(steamId);
                 }
             }
             
