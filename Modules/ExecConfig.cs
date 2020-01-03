@@ -29,7 +29,8 @@ namespace R2DSEssentials.Modules
 
         protected override void MakeConfig()
         {
-            _configFileName = AddConfig("Server CFG Filename", "server", "Name of the CFG File to load at the startup of the server. Don't include the extension. Example : server");
+            _configFileName = AddConfig("Server CFG Filename", "server",
+                "Name of the CFG File to load at the startup of the server. Don't include the extension. Example : server");
         }
 
         private void Execute()

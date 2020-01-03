@@ -2,10 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using BepInEx.Configuration;
 using RoR2;
 using Facepunch.Steamworks;
+using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
+using Console = RoR2.Console;
 
 namespace R2DSEssentials.Modules
 {
@@ -16,10 +19,13 @@ namespace R2DSEssentials.Modules
         public const string ModuleDescription = "Retrieve player usernames through third party website. Don't need a steam api key.";
         public const bool   DefaultEnabled = true;
 
+        private ConfigEntry<bool> _enableBlackListRichNames;
+        private ConfigEntry<string> _blackListRichNames;
+
         internal static event Action OnUsernameUpdated;
 
         internal static readonly Dictionary<ulong, string> UsernamesCache = new Dictionary<ulong, string>();
-        private readonly List<ulong> _requestCache = new List<ulong>();
+        private static readonly List<ulong> RequestCache = new List<ulong>();
 
         public RetrieveUsername(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
@@ -30,16 +36,23 @@ namespace R2DSEssentials.Modules
         {
             On.RoR2.NetworkPlayerName.GetResolvedName += OnGetResolvedName;
             Run.OnServerGameOver += EmptyCachesOnGameOver;
+            On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += RemoveCacheOnPlayerDisconnect;
         }
 
         protected override void UnHook()
         {
             On.RoR2.NetworkPlayerName.GetResolvedName -= OnGetResolvedName;
             Run.OnServerGameOver -= EmptyCachesOnGameOver;
+            On.RoR2.Networking.GameNetworkManager.OnServerDisconnect -= RemoveCacheOnPlayerDisconnect;
         }
 
         protected override void MakeConfig()
         {
+            _enableBlackListRichNames = AddConfig("Enable Auto-kick Rich Tag", true,
+                "Should the auto-kicker be enabled for people with rich name like oversized names / names with annoying tag");
+
+            _blackListRichNames = AddConfig("Rich Tag Blacklist", "size, style",
+                "Blacklist thats used for banning specific tags, only input the tag name in this. Example : size, style, color");
         }
 
         private string OnGetResolvedName(On.RoR2.NetworkPlayerName.orig_GetResolvedName orig, ref NetworkPlayerName self)
@@ -52,10 +65,28 @@ namespace R2DSEssentials.Modules
             return orig(ref self);
         }
 
-        private void EmptyCachesOnGameOver(Run self, GameResultType gameResult)
+        private static void EmptyCachesOnGameOver(Run self, GameResultType gameResult)
         {
             UsernamesCache.Clear();
-            _requestCache.Clear();
+            RequestCache.Clear();
+        }
+
+        private static void RemoveCacheOnPlayerDisconnect(On.RoR2.Networking.GameNetworkManager.orig_OnServerDisconnect orig, GameNetworkManager self, NetworkConnection conn)
+        {
+            var nu = Util.Networking.FindNetworkUserForConnectionServer(conn);
+
+            if (nu != null)
+            {
+                var steamId = nu.GetNetworkPlayerName().steamId.value;
+
+                if (steamId != 0)
+                {
+                    UsernamesCache.Remove(steamId);
+                    RequestCache.Remove(steamId);
+                }
+            }
+
+            orig(self, conn);
         }
 
         // ReSharper disable once InconsistentNaming
@@ -66,9 +97,9 @@ namespace R2DSEssentials.Modules
             if (steamId.ToString().Length != 17)
                 return unkString;
 
-            if (!_requestCache.Contains(steamId))
+            if (!RequestCache.Contains(steamId))
             {
-                _requestCache.Add(steamId);
+                RequestCache.Add(steamId);
                 PluginEntry.Instance.StartCoroutine(WebRequestCoroutine(steamId));
             }
             
@@ -105,23 +136,41 @@ namespace R2DSEssentials.Modules
 
                     if (!nameFromRegex.Equals(""))
                     {
-                        if (!UsernamesCache.ContainsKey(steamId))
+                        var gotBlackListed = false;
+
+                        if (_enableBlackListRichNames.Value)
+                        {
+                            var blackList = _blackListRichNames.Value.Split(',');
+
+                            foreach (var tag in blackList)
+                            {
+                                var bannedTag = "&lt;" + tag + "=";
+                                if (nameFromRegex.Contains(bannedTag))
+                                {
+                                    var userToKick = Util.Networking.GetNetworkUserFromSteamId(steamId);
+                                    var playerId = Util.Networking.GetPlayerIndexFromNetworkUser(userToKick);
+
+                                    Console.instance.SubmitCmd(null, $"kick {playerId}");
+                                    gotBlackListed = true;
+                                }
+                            }
+                        }
+
+                        if (!UsernamesCache.ContainsKey(steamId) && !gotBlackListed)
                         {
                             UsernamesCache.Add(steamId, nameFromRegex);
-                            foreach (var networkUser in NetworkUser.readOnlyInstancesList)
+
+                            var networkUser = Util.Networking.GetNetworkUserFromSteamId(steamId);
+                            if (networkUser != null)
                             {
-                                if (networkUser.GetNetworkPlayerName().steamId.value == steamId)
-                                {
-                                    Logger.LogInfo($"New player : {nameFromRegex} connected. (STEAM:{steamId})");
-                                    networkUser.userName = nameFromRegex;
+                                Logger.LogInfo($"New player : {nameFromRegex} connected. (STEAM:{steamId})");
+                                networkUser.userName = nameFromRegex;
 
-                                    // Sync with other players by forcing dirty syncVar ?
-                                    SyncNetworkUserVarTest(networkUser);
+                                // Sync with other players by forcing dirty syncVar ?
+                                SyncNetworkUserVarTest(networkUser);
 
-                                    OnUsernameUpdated?.Invoke();
-                                    OnUsernameUpdated = null;
-                                    break;
-                                }
+                                OnUsernameUpdated?.Invoke();
+                                OnUsernameUpdated = null;
                             }
                         }    
                     }
