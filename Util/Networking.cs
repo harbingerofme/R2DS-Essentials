@@ -30,5 +30,31 @@ namespace R2DSEssentials.Util
 
             return null;
         }
+
+        internal static NetworkUser GetNetworkUserFromSteamId(ulong steamId)
+        {
+            foreach (var networkUser in NetworkUser.readOnlyInstancesList)
+            {
+                if (networkUser.GetNetworkPlayerName().steamId.value == steamId)
+                {
+                    return networkUser;
+                }
+            }
+
+            return null;
+        }
+
+        internal static int GetPlayerIndexFromNetworkUser(NetworkUser networkUser)
+        {
+            for (int i = 0; i < NetworkUser.readOnlyInstancesList.Count; i++)
+            {
+                if (networkUser.Network_id.Equals(NetworkUser.readOnlyInstancesList[i].Network_id))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
     }
 }
