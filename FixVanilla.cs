@@ -27,8 +27,7 @@ namespace R2DSEssentials
         {
             var cursor = new ILCursor(il);
 
-            cursor.GotoNext
-            (
+            cursor.GotoNext(MoveType.Before,
                 i => i.MatchRet()
             );
 
@@ -45,14 +44,12 @@ namespace R2DSEssentials
                 }
             });
 
-            cursor.GotoPrev
-            (
+            cursor.GotoPrev(MoveType.Before,
                 i => i.MatchLdarg(0)
             );
             var label = cursor.MarkLabel();
 
-            cursor.GotoPrev
-            (
+            cursor.GotoPrev(MoveType.Before,
                 i => i.MatchBrfalse(out _)
             );
             cursor.Next.Operand = label;
