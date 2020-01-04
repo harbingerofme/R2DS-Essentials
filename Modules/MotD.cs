@@ -117,7 +117,7 @@ namespace R2DSEssentials.Modules
             var configDef = new ConfigDefinition(ModuleName, name);
             if (PluginEntry.Configuration.ContainsKey(configDef))
             {
-                stageMessages[name] = PluginEntry.Configuration.Bind<string>(configDef,"");
+                stageMessages.Add(name,PluginEntry.Configuration.Bind<string>(configDef,""));
                 return stageMessages[name].Value;
             }
             return "";
@@ -135,14 +135,14 @@ namespace R2DSEssentials.Modules
                 var configDef = new ConfigDefinition(ModuleName, name);
                 if (PluginEntry.Configuration.ContainsKey(configDef))
                 {
-                    stageMessages[name] = PluginEntry.Configuration.Bind<string>(configDef, "");
+                    stageMessages.Add(name, PluginEntry.Configuration.Bind<string>(configDef, ""));
                     stageMessages[name].Value = newArgs;
                 }
                 else
                 {
                     ConfigEntry<string> entry = PluginEntry.Configuration.Bind<string>(configDef, "", new ConfigDescription(_MOTSHelp));
                     entry.Value = newArgs;
-                    stageMessages[name] = entry;
+                    stageMessages.Add(name,entry);
                 }
             }
         }
