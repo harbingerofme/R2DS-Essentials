@@ -7,11 +7,21 @@ using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace R2DSEssentials
+namespace R2DSEssentials.Modules
 {
-    internal static class FixVanilla
+    [Module(ModuleName, ModuleDescription, DefaultEnabled)]
+    class FixVanilla : R2DSEModule
     {
-        internal static void Init()
+        public const string ModuleName = nameof(FixVanilla);
+        public const string ModuleDescription =
+            "Fix vanilla issues: unity console spam, camera console spam when players are in menu, disconnected players still showing in server browser, and ability for Server to talk in chat directly from the console";
+        public const bool DefaultEnabled = true;
+
+        public FixVanilla(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
+        {
+        }
+
+        protected override void Hook()
         {
             NativeWrapper.InjectRemoveGarbage();
 
@@ -21,6 +31,21 @@ namespace R2DSEssentials
             On.LeTai.Asset.TranslucentImage.TranslucentImage.LateUpdate += FixCameraErrorSpamPartTwo;
 
             On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += EndAuthOnClientDisconnect;
+        }
+
+        protected override void MakeConfig()
+        {
+            //can be empty.
+        }
+
+        protected override void UnHook()
+        {
+            IL.RoR2.Chat.CCSay -= ServerSay;
+
+            On.LeTai.Asset.TranslucentImage.TranslucentImage.Start -= FixCameraErrorSpam;
+            On.LeTai.Asset.TranslucentImage.TranslucentImage.LateUpdate -= FixCameraErrorSpamPartTwo;
+
+            On.RoR2.Networking.GameNetworkManager.OnServerDisconnect -= EndAuthOnClientDisconnect;
         }
 
         private static void ServerSay(ILContext il)
@@ -85,7 +110,7 @@ namespace R2DSEssentials
                     Server.Instance?.Auth.EndSession(steamId);
                 }
             }
-            
+
             orig(self, conn);
         }
     }

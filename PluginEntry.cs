@@ -58,8 +58,6 @@ namespace R2DSEssentials
                 return;
             }
 
-            FixVanilla.Init();
-
             var types = Assembly.GetExecutingAssembly().GetTypes();
             foreach (Type type in types)
             {
