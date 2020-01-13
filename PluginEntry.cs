@@ -64,7 +64,7 @@ namespace R2DSEssentials
             {
                 ModuleAttribute customAttr = (ModuleAttribute)type.GetCustomAttributes(typeof(ModuleAttribute), false).FirstOrDefault();
                 var dependencies = type.GetCustomAttributes<PluginDependency>();
-                if (customAttr != null && dependencies.All((dep) => pluginInfos.ContainsKey(dep.GUID))
+                if (customAttr != null && dependencies.All(dep => pluginInfos.ContainsKey(dep.GUID)))
                 {
                     foreach(FieldInfo field in type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                     {
