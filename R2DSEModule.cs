@@ -26,6 +26,7 @@ namespace R2DSEssentials
             Name = name;
             Description = description;
             Enabled = AddConfig("_Enabled", defaultEnabled, Description);
+            // ReSharper disable once VirtualMemberCallInConstructor  Justification=The consctructor of an abstract class shouldn't be called anyway. 
             MakeConfig();
             Logger = PluginEntry.Log;
         }
