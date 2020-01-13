@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,11 +58,13 @@ namespace R2DSEssentials
                 return;
             }
 
+            var pluginInfos = BepInEx.Bootstrap.Chainloader.PluginInfos;
             var types = Assembly.GetExecutingAssembly().GetTypes();
             foreach (Type type in types)
             {
                 ModuleAttribute customAttr = (ModuleAttribute)type.GetCustomAttributes(typeof(ModuleAttribute), false).FirstOrDefault();
-                if (customAttr != null)
+                var dependencies = type.GetCustomAttributes<PluginDependency>();
+                if (customAttr != null && dependencies.All((dep) => pluginInfos.ContainsKey(dep.GUID))
                 {
                     foreach(FieldInfo field in type.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                     {
