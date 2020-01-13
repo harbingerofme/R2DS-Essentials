@@ -15,14 +15,14 @@ namespace R2DSEssentials
 {
     [BepInDependency(R2API.R2API.PluginGUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(ModGuid, ModName, ModVer)]
-    class PluginEntry : BaseUnityPlugin
+    public sealed class PluginEntry : BaseUnityPlugin
     {
         private const string ModVer = "1.0.0";
         private const string ModName = "R2DSE";
+        // ReSharper disable once MemberCanBePrivate.Global  Justification = This is public facing for other mods to quickly access.
         public const string ModGuid = "com.HarbAndDeath." + ModName;
         public static ManualLogSource Log;
         public static ConfigFile Configuration;
-        private static ConfigEntry<bool> DisableWhenGraphicDetected;
         public static Dictionary<string, R2DSEModule> Modules;
 
         private readonly Queue<ModuleAndAttribute>[] ModulesToLoad;
@@ -50,9 +50,9 @@ namespace R2DSEssentials
             ModulesToLoad[0] = new Queue<ModuleAndAttribute>();
             ModulesToLoad[1] = new Queue<ModuleAndAttribute>();
 
-            DisableWhenGraphicDetected = Configuration.Bind("_R2DSE", "Disable When Graphics Detected", true, "Disable the plugin when game graphics are detected.");
+            var disableWhenGraphicDetected = Configuration.Bind("_R2DSE", "Disable When Graphics Detected", true, "Disable the plugin when game graphics are detected.");
 
-            if (!Application.isBatchMode && DisableWhenGraphicDetected.Value)
+            if (!Application.isBatchMode && disableWhenGraphicDetected.Value)
             {
                 Logger.LogWarning("Detected graphics. Plugin disabled. If you want to use R2DSE in this mode please change the plugin config.");
                 return;
@@ -83,11 +83,11 @@ namespace R2DSEssentials
                     }
                     if (customAttr.target == ModuleAttribute.StartupTarget.Awake)
                     {
-                        ModulesToLoad[0].Enqueue(new ModuleAndAttribute() { Module = type, attribute = customAttr});
+                        ModulesToLoad[0].Enqueue(new ModuleAndAttribute() { Module = type, Attribute = customAttr});
                     }
                     else
                     {
-                        ModulesToLoad[1].Enqueue(new ModuleAndAttribute() { Module = type, attribute = customAttr });
+                        ModulesToLoad[1].Enqueue(new ModuleAndAttribute() { Module = type, Attribute = customAttr });
                     }
                 }
             }
@@ -153,11 +153,14 @@ namespace R2DSEssentials
         {
             if (ConvarsToAdd.Count > 0)
                 Logger.LogInfo($"Registering {ConvarsToAdd.Count} ConVars");
-            var convarAddMethod = typeof(RoR2.Console).GetMethod("RegisterConVarInternal", BindingFlags.NonPublic | BindingFlags.Instance);
-            while (ConvarsToAdd.Count > 0)
+            MethodInfo convarAddMethod = typeof(RoR2.Console).GetMethod("RegisterConVarInternal", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (convarAddMethod != null)
             {
-                BaseConVar convar = ConvarsToAdd.Dequeue();
-                convarAddMethod.Invoke(RoR2.Console.instance, new object[] { convar });
+                while (ConvarsToAdd.Count > 0)
+                {
+                    BaseConVar convar = ConvarsToAdd.Dequeue();
+                    convarAddMethod.Invoke(RoR2.Console.instance, new object[] {convar});
+                }
             }
         }
 
@@ -173,8 +176,8 @@ namespace R2DSEssentials
 
             if (ConCommandsToAdd.Count > 0)
                 Logger.LogInfo($"Registering {ConCommandsToAdd.Count} ConCommands");
-            var CCcatalog = (IDictionary)typeof(RoR2.Console).GetField("concommandCatalog", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(RoR2.Console.instance);
-            var CCtype = typeof(RoR2.Console).GetNestedType("ConCommand", BindingFlags.NonPublic);
+            IDictionary CCcatalog = (IDictionary)typeof(RoR2.Console).GetField("concommandCatalog", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(RoR2.Console.instance);
+            Type CCtype = typeof(RoR2.Console).GetNestedType("ConCommand", BindingFlags.NonPublic);
             while (ConCommandsToAdd.Count > 0)
             {
                 MethodInfo methodInfo = ConCommandsToAdd.Dequeue();
@@ -203,9 +206,9 @@ namespace R2DSEssentials
 
         private void EnableModule(ModuleAndAttribute module)
         {
-            Logger.LogInfo($"Enabling module: {module.attribute.Name}");
+            Logger.LogInfo($"Enabling module: {module.Attribute.Name}");
 
-            ModuleAttribute customAttr = module.attribute;
+            ModuleAttribute customAttr = module.Attribute;
             Type type = module.Module;
             constuctorArgumentArray[0] = customAttr.Name;
             constuctorArgumentArray[1] = customAttr.Description;
@@ -227,7 +230,7 @@ namespace R2DSEssentials
         private sealed class ModuleAndAttribute
         {
             public Type Module;
-            public ModuleAttribute attribute;
+            public ModuleAttribute Attribute;
         }
     }
 }

@@ -165,7 +165,7 @@ namespace R2DSEssentials.Modules
             if (mothValConfig.Value > 0 && mothConfig.Value != "" && time<DateTime.Now)
             {
                 time = time.AddMinutes(mothValConfig.Value);
-                Chat.SendBroadcastChat(new Chat.SimpleChatMessage() { baseToken = "{0}", paramTokens = new string[] { mothConfig.Value } });
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage { baseToken = "{0}", paramTokens = new[] { mothConfig.Value } });
             }
         }
 
@@ -176,18 +176,18 @@ namespace R2DSEssentials.Modules
 
         private void MotrAndMots(Stage obj)
         {
-            if(motrConfig.Value!= "" && motrValConfig.Value>0 && Run.instance && !(Run.instance.stageClearCount != lastStageCount))
+            if(motrConfig.Value!= "" && motrValConfig.Value>0 && Run.instance && Run.instance.stageClearCount != lastStageCount)
             {
                 lastStageCount = Run.instance.stageClearCount;
                 if (lastStageCount % motrValConfig.Value == 0)
                 {
-                    Chat.SendBroadcastChat(new Chat.SimpleChatMessage() { baseToken = "{0}", paramTokens = new string[] { motrConfig.Value } });
+                    Chat.SendBroadcastChat(new Chat.SimpleChatMessage { baseToken = "{0}", paramTokens = new[] { motrConfig.Value } });
                 }
             }
             string mots = GetMotS(obj.sceneDef.baseSceneName);
             if (mots != "")
             {
-                Chat.SendBroadcastChat(new Chat.SimpleChatMessage() { baseToken = "{0}", paramTokens = new string[] { mots } });
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage { baseToken = "{0}", paramTokens = new[] { mots } });
             }
         }
 
@@ -256,7 +256,7 @@ namespace R2DSEssentials.Modules
             string message = motdConfig.Value;
             if (message.Contains("%STEAM%"))
             {
-                var steamId = ServerAuthManager.FindAuthData(conn).steamId.ToString();
+                string steamId = ServerAuthManager.FindAuthData(conn).steamId.ToString();
                 message = message.Replace("%STEAM%", steamId.Length == 17 ? steamId : "No Steam"); // If length isnt 17 the user either didnt send auth data or doesnt have steam.
             }
 
@@ -269,7 +269,7 @@ namespace R2DSEssentials.Modules
             {
                 if (PluginEntry.Modules.ContainsKey(nameof(RetrieveUsername)) && PluginEntry.Modules[nameof(RetrieveUsername)].IsEnabled)
                 {
-                    var networkUser = Util.Networking.FindNetworkUserForConnectionServer(conn);
+                    NetworkUser networkUser = Util.Networking.FindNetworkUserForConnectionServer(conn);
                     message = message.Replace("%USER%", networkUser.userName);
                 }
                 else
