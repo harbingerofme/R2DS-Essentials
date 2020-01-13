@@ -68,7 +68,7 @@ namespace R2DSEssentials.Modules
         {
             motdConfig = AddConfigConvar<string>("Message of the day", _defaultMOTDValue, _MOTDHelp, MotdConVar);
             motrConfig = AddConfigConvar<string>("Message of the round", _defaultMOTRValue, _MOTRHelp, MotrConVar);
-            mothConfig = AddConfigConvar<string>("Message of the hour", _defaultMOTRValue, _MOTRHelp, MotrConVar);
+            mothConfig = AddConfigConvar<string>("Message of the hour", _defaultMOTHValue, _MOTHHelp, MothConVar);
             motrValConfig = AddConfigConvar<int>("Rounds per message", _defaultMOTRRoundsValue, _MOTRRoundsHelp, MotrValConVar);
             mothValConfig = AddConfigConvar<int>("Rounds per message", _defaultMOTHTimeValue, _MOTHTimeHelp, MothValConVar);
         }
