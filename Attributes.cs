@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace R2DSEssentials
 {
@@ -40,5 +40,11 @@ namespace R2DSEssentials
             Hard,
             Soft
         }
+    }
+
+    [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+    internal class PluginDependency : Attribute
+    {
+        public string GUID;
     }
 }
