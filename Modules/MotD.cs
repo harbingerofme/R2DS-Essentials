@@ -253,7 +253,7 @@ namespace R2DSEssentials.Modules
 
         private string GenerateMotDFormatted(NetworkConnection conn)
         {
-            string message = MotdConVar.GetString();
+            string message = motdConfig.Value;
             if (message.Contains("%STEAM%"))
             {
                 var steamId = ServerAuthManager.FindAuthData(conn).steamId.ToString();
