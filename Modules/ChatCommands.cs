@@ -1,10 +1,4 @@
-﻿
-
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
-
-namespace R2DSEssentials.Modules
+﻿namespace R2DSEssentials.Modules
 {
     [Module(ModuleName, ModuleDescription, DefaultEnabled)]
     class ChatCommands : R2DSEModule
