@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Configurations>Debug;Release;Bleeding Edge</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bleeding Edge|AnyCPU'">
+    <Optimize></Optimize>
+    <DefineConstants>TRACE;BLEEDING = 1;</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -72,6 +78,11 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy /y $(TargetPath) $(ProjectDir)" />
+  </Target>
+
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="git rev-parse --verify HEAD &gt; CurrentCommit" />
   </Target>
 
 </Project>

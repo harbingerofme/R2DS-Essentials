@@ -39,6 +39,26 @@ namespace R2DSEssentials
 
         private PluginEntry()
         {
+            #region Not Release Message
+#if !RELEASE   //Additional references in this block must be fully qualifed as to not use them in Release Builds.
+            string gitVersion = "";
+            using (System.IO.Stream stream = System.Reflection.Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream($"{this.GetType().Namespace}.CurrentCommit"))
+            using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
+            {
+                gitVersion = reader.ReadToEnd();
+            }
+            Logger.LogWarning(
+#if DEBUG
+                $"This is a debug build!"
+#elif BLEEDING
+                $"This is a Bleeding-Edge build!"
+#endif
+                );
+            Log.LogWarning($" Commit: {gitVersion.Trim()}");
+#endif
+            #endregion
+
             Instance = this;
             Log = Logger;
             Configuration = Config;
