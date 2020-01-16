@@ -56,7 +56,8 @@ Hides the IP from the console output window, mostly for preventing privacy leaks
 
 ### ModSync
 
-*REQUIRES R2API* This module aims to prevent desync and cheating by mods. Comes with extensive configuration.
+*REQUIRES R2API*.
+This module aims to prevent desync and cheating by mods. Comes with extensive configuration.
 
 * Prevent clients with blacklisted mods from connecting.
 * Prevent clients without whitelisted mods from connecting.
@@ -72,4 +73,6 @@ Makes the users appear with their actual steam nickname instead of `???`.
   
 ## Planned features
 
-- ?
+*While we may have these modules planned, do not be discouraged to create them as a separate mod on your own. Alternatively, you can submit it as a module to us through [Github](https://github.com/harbingerofme/R2DS-Essentials)*
+
+- Votekick
