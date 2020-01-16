@@ -119,6 +119,15 @@ namespace R2DSEssentials
                 EnableModule(temp);
             }
 
+            StringBuilder stringBuilder = new StringBuilder("Enabled Modules: ");
+            foreach(var pair in Modules)
+            {
+                if (pair.Value.IsEnabled)
+                {
+                    stringBuilder.Append($"[{pair.Key}] ");
+                }
+            }
+            Logger.LogInfo(stringBuilder.ToString());
             LoadConVars();
             LoadConCommands();
 
