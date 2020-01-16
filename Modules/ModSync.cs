@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using BepInEx.Configuration;
@@ -164,10 +164,10 @@ namespace R2DSEssentials.Modules
             return vanillaCheck && moddedCheck && requiredCheck && bannedCheck && allowedCheck;
         }
 
-        private readonly string basePath = Path.PathSeparator + "ModSyncLists";
-        private readonly string requiredPath = Path.PathSeparator + "RequiredMods.txt";
-        private readonly string bannedPath = Path.PathSeparator + "BannedMods.txt";
-        private readonly string approvedPath = Path.PathSeparator + "ApprovedMods.txt";
+        private readonly string basePath = Path.DirectorySeparatorChar + "ModSyncLists";
+        private readonly string requiredPath = Path.DirectorySeparatorChar + "RequiredMods.txt";
+        private readonly string bannedPath = Path.DirectorySeparatorChar + "BannedMods.txt";
+        private readonly string approvedPath = Path.DirectorySeparatorChar + "ApprovedMods.txt";
 
         const string infoEnd = "----------";
 
