@@ -42,8 +42,8 @@ namespace R2DSEssentials
             #region Not Release Message
 #if !RELEASE   //Additional references in this block must be fully qualifed as to not use them in Release Builds.
             string gitVersion = "";
-            using (System.IO.Stream stream = System.Reflection.Assembly.GetExecutingAssembly()
-                    .GetManifestResourceStream($"{this.GetType().Namespace}.CurrentCommit"))
+            using (System.IO.Stream stream = Assembly.GetExecutingAssembly()
+                    .GetManifestResourceStream($"{GetType().Namespace}.CurrentCommit"))
             using (System.IO.StreamReader reader = new System.IO.StreamReader(stream))
             {
                 gitVersion = reader.ReadToEnd();
