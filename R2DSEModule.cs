@@ -63,5 +63,22 @@ namespace R2DSEssentials
             entry.SettingChanged += ReloadHooks;
             return entry;
         }
+
+        protected void LogModuleMessage(object message)
+        {
+            Logger.LogMessage($"[{Name}] {message}");
+        }
+        protected void LogModuleInfo(object message)
+        {
+            Logger.LogInfo($"[{Name}] {message}");
+        }
+        protected void LogModuleWarning(object message)
+        {
+            Logger.LogWarning($"[{Name}] {message}");
+        }
+        protected void LogModuleError(object message)
+        {
+            Logger.LogError($"[{Name}] {message}");
+        }
     }
 }
