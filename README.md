@@ -5,18 +5,19 @@ Intended to work for all clients, including vanilla, although obviously other mo
 
 Track update progress, get support and suggest new features over at the [R2DSE discord](https://discord.gg/yTfsMWP).
 
-**Maintainers : Harb and iDeath**
+**Maintainers : [Harb](https://thunderstore.io/package/Harb/) and [iDeath](https://thunderstore.io/package/xiaoxiao921/)**
+
 **Contributors:**
     
-    * Rein: ModSync module 
+* [Rein](https://thunderstore.io/package/Rein/): ModSync module 
 
 ## Main Features
 
 - Let you choose to enable and disable what modules you want from the config file located in `BepInEx\config`.
 - Interactible Server Console to execute commands directly from the console window!
 - Remove useless spam (`Filename: C:\buildslave...` and `Fallback...`) for easier monitoring.
-- (almost) completely modular!
-- Doesn't need a full r2api installed. *(Just it's `MMHOOK` file will do, an update is usually available for this on patch day from the modding discord.)*
+- (Almost) completely modular!
+- Doesn't need a full R2API installed. *(Just it's `MMHOOK` file will do, an update is usually available for this on patch day from the modding discord.)*
 - Helper Functions exposed, so other mods can depend on R2DSE.
 
 ### Installation
