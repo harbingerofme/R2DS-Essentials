@@ -239,10 +239,9 @@ namespace R2DSEssentials.Modules
             {
                 Directory.CreateDirectory(BaseDirectoryPath);
             }
-
             if (!File.Exists(FullRequiredPath))
             {
-                Logger.LogInfo("Required Mods file not found, creating new.");
+                LogModuleInfo("Required Mods file not found, creating new.");
 
                 File.AppendAllLines(FullRequiredPath, requiredModsInfo);
             }
@@ -270,7 +269,6 @@ namespace R2DSEssentials.Modules
                         }
                     }
                 }
-
                 bool writeNewInfo = false;
                 if (infoList.Count != requiredModsInfo.Length)
                 {
@@ -278,18 +276,16 @@ namespace R2DSEssentials.Modules
                 }
                 else
                 {
-                    for (Int32 i = 0; i < infoList.Count; ++i)
+                    for (int i = 0; i < infoList.Count; ++i)
                     {
                         if (infoList[i] != requiredModsInfo[i]) writeNewInfo = true;
                     }
                 }
-
                 if (writeNewInfo)
                 {
                     File.WriteAllLines(FullRequiredPath, requiredModsInfo);
                     File.AppendAllLines(FullRequiredPath, modsList);
                 }
-
                 foreach (string s in modsList)
                 {
                     if (s == "")
@@ -304,14 +300,13 @@ namespace R2DSEssentials.Modules
                     }
                     catch
                     {
-                        Logger.LogError("Invalid Line: " + s + " in required mods list, skipping.");
+                        LogModuleError("Invalid Line: " + s + " in required mods list, skipping.");
                     }
                 }
             }
-
             if (!File.Exists(FullBannedPath))
             {
-                Logger.LogInfo("Banned Mods file not found, creating new.");
+                LogModuleInfo("Banned Mods file not found, creating new.");
 
                 File.AppendAllLines(FullBannedPath, bannedModsInfo);
             }
@@ -339,7 +334,6 @@ namespace R2DSEssentials.Modules
                         }
                     }
                 }
-
                 bool writeNewInfo = false;
                 if (infoList.Count != bannedModsInfo.Length)
                 {
@@ -347,18 +341,16 @@ namespace R2DSEssentials.Modules
                 }
                 else
                 {
-                    for (Int32 i = 0; i < infoList.Count; ++i)
+                    for (int i = 0; i < infoList.Count; ++i)
                     {
                         if (infoList[i] != bannedModsInfo[i]) writeNewInfo = true;
                     }
                 }
-
                 if (writeNewInfo)
                 {
                     File.WriteAllLines(FullBannedPath, bannedModsInfo);
                     File.AppendAllLines(FullBannedPath, modsList);
                 }
-
                 foreach (string s in modsList)
                 {
                     if (s == "")
@@ -373,14 +365,13 @@ namespace R2DSEssentials.Modules
                     }
                     catch
                     {
-                        Logger.LogError("Invalid Line: " + s + " in banned mods list, skipping.");
+                        LogModuleError("Invalid Line: " + s + " in banned mods list, skipping.");
                     }
                 }
             }
-
             if (!File.Exists(FullApprovedPath))
             {
-                Logger.LogInfo("Approved Mods file not found, creating new.");
+                LogModuleInfo("Approved Mods file not found, creating new.");
 
                 File.AppendAllLines(FullApprovedPath, approvedModsInfo);
             }
@@ -408,7 +399,6 @@ namespace R2DSEssentials.Modules
                         }
                     }
                 }
-
                 bool writeNewInfo = false;
                 if (infoList.Count != approvedModsInfo.Length)
                 {
@@ -416,12 +406,11 @@ namespace R2DSEssentials.Modules
                 }
                 else
                 {
-                    for (Int32 i = 0; i < infoList.Count; ++i)
+                    for (int i = 0; i < infoList.Count; ++i)
                     {
                         if (infoList[i] != approvedModsInfo[i]) writeNewInfo = true;
                     }
                 }
-
                 if (writeNewInfo)
                 {
                     File.WriteAllLines(FullApprovedPath, approvedModsInfo);
@@ -442,7 +431,7 @@ namespace R2DSEssentials.Modules
                     }
                     catch
                     {
-                        Logger.LogError("Invalid Line: " + s + " in approved mods list, skipping.");
+                        LogModuleError("Invalid Line: " + s + " in approved mods list, skipping.");
                     }
                 }
             }
