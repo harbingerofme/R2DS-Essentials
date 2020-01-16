@@ -78,7 +78,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy /y $(TargetPath) $(ProjectDir)" />
+    <Exec Command="robocopy /y $(TargetPath) $(ProjectDir) &gt; $(TargetDir)Robocopy&#xD;&#xA;del $(TargetDir)Robocopy" />
   </Target>
 
 
