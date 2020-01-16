@@ -17,7 +17,7 @@ namespace R2DSEssentials
     [BepInPlugin(ModGuid, ModName, ModVer)]
     public sealed class PluginEntry : BaseUnityPlugin
     {
-        private const string ModVer = "1.0.0";
+        private const string ModVer = "1.1.0";
         private const string ModName = "R2DSE";
         // ReSharper disable once MemberCanBePrivate.Global  Justification = This is public facing for other mods to quickly access.
         public const string ModGuid = "com.HarbAndDeath." + ModName;
