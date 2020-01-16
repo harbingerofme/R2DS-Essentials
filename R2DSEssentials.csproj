@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -78,7 +78,7 @@
 
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="robocopy $(TargetDir) $(ProjectDir) $(TargetFileName) &gt; $(TargetDir)Robocopy&#xD;&#xA;del $(TargetDir)Robocopy" />
+    <Exec Command="robocopy $(TargetDir) $(ProjectDir) $(TargetFileName) &gt; $(TargetDir)Robocopy&#xD;&#xA;ren  $(ProjectDir)$(TargetFileName) &quot;R2DS-Essentials.dll&quot;&#xD;&#xA;del $(TargetDir)Robocopy" />
   </Target>
 
 </Project>
