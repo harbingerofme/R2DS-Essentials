@@ -15,13 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Bleeding Edge|Any CPU = Bleeding Edge|Any CPU
+		Bleeding-Edge|Any CPU = Bleeding-Edge|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{70CF3F79-167D-40C3-A489-16E1E1D902C1}.Bleeding Edge|Any CPU.ActiveCfg = Bleeding Edge|Any CPU
-		{70CF3F79-167D-40C3-A489-16E1E1D902C1}.Bleeding Edge|Any CPU.Build.0 = Bleeding Edge|Any CPU
+		{70CF3F79-167D-40C3-A489-16E1E1D902C1}.Bleeding-Edge|Any CPU.ActiveCfg = Bleeding-Edge|Any CPU
+		{70CF3F79-167D-40C3-A489-16E1E1D902C1}.Bleeding-Edge|Any CPU.Build.0 = Bleeding-Edge|Any CPU
 		{70CF3F79-167D-40C3-A489-16E1E1D902C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{70CF3F79-167D-40C3-A489-16E1E1D902C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70CF3F79-167D-40C3-A489-16E1E1D902C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
