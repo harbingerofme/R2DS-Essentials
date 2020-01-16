@@ -22,6 +22,6 @@ namespace R2DSEssentials.Modules.ModSyncHelper
             maxVersion = splits[3].Trim().ToLower();
         }
 
-        public PrefEntry prefEntry => new PrefEntry(guid, enforceConfig, minVersion, maxVersion);
+        public PrefEntry PrefEntry => new PrefEntry(guid, enforceConfig, minVersion, maxVersion);
     }
 }

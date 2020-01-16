@@ -6,41 +6,35 @@ namespace R2DSEssentials.Modules.ModSyncHelper
     //Code by https://github.com/ReinMasamune
     public class PrefEntry
     {
-        public string guid { get; private set; }
-        public bool enforceConfig { get; private set; }
-        public Version minVersion { get; private set; }
-        public Version maxVersion { get; private set; }
+        public string Guid { get; private set; }
+        public bool EnforceConfig { get; private set; }
+        public Version MinVersion { get; private set; }
+        public Version MaxVersion { get; private set; }
 
-        public bool useMinVersion
-        {
-            get { return minVersion != null; }
-        }
+        public bool UseMinVersion => MinVersion != null;
 
-        public bool useMaxVersion
-        {
-            get { return maxVersion != null; }
-        }
+        public bool UseMaxVersion => MaxVersion != null;
 
         public bool Check(ModListAPI.ModInfo mod)
         {
             if (mod == null) return false;
-            if (guid != mod.guid.ToLower()) return false;
-            if (useMinVersion && mod.version < minVersion) return false;
-            if (useMaxVersion && mod.version > maxVersion) return false;
+            if (Guid != mod.guid.ToLower()) return false;
+            if (UseMinVersion && mod.version < MinVersion) return false;
+            if (UseMaxVersion && mod.version > MaxVersion) return false;
             return true;
         }
 
         internal PrefEntry(string guid, string enforceConfig, string minVersion, string maxVersion)
         {
-            this.guid = guid;
-            this.enforceConfig = (enforceConfig == "true");
+            Guid = guid;
+            EnforceConfig = (enforceConfig == "true");
 
 
             Version.TryParse(minVersion, out Version minVer);
             Version.TryParse(maxVersion, out Version maxVer);
 
-            this.minVersion = minVer;
-            this.maxVersion = maxVer;
+            MinVersion = minVer;
+            MaxVersion = maxVer;
         }
     }
 }

@@ -108,7 +108,7 @@ namespace R2DSEssentials.Modules
 
                     if (!tempCheck)
                     {
-                        Logger.LogWarning("Kicking player due to missing required mod: " + entry.guid);
+                        Logger.LogWarning("Kicking player due to missing required mod: " + entry.Guid);
                         requiredCheck = false;
                     }
                 }
@@ -171,7 +171,7 @@ namespace R2DSEssentials.Modules
 
         const string infoEnd = "----------";
 
-        private string[] requiredModsInfo = new string[]
+        private readonly string[] requiredModsInfo = new string[]
         {
             "Required Mods",
             "If enabled in the standard config, any connecting players must have all mods on this list installed.",
@@ -185,7 +185,7 @@ namespace R2DSEssentials.Modules
             infoEnd
         };
 
-        private string[] bannedModsInfo = new string[]
+        private readonly string[] bannedModsInfo = new string[]
         {
             "Banned Mods",
             "If enabled in the standard config, players will be unable to connect with any of the mods on this list installed.",
@@ -198,7 +198,7 @@ namespace R2DSEssentials.Modules
             infoEnd
         };
 
-        private string[] approvedModsInfo = new string[]
+        private readonly string[] approvedModsInfo = new string[]
         {
             "Approved Mods",
             "If enabled in the standard config, any players with mods that are not on this list (Or required list) will be unable to connect.",
@@ -211,16 +211,16 @@ namespace R2DSEssentials.Modules
             infoEnd
         };
 
-        private List<ModEntry> requiredEntries = new List<ModEntry>();
-        private List<ModEntry> bannedEntries = new List<ModEntry>();
-        private List<ModEntry> approvedEntries = new List<ModEntry>();
+        private readonly List<ModEntry> requiredEntries = new List<ModEntry>();
+        private readonly List<ModEntry> bannedEntries = new List<ModEntry>();
+        private readonly List<ModEntry> approvedEntries = new List<ModEntry>();
 
-        private string baseDirectoryPath =>
+        private string BaseDirectoryPath =>
             Path.GetDirectoryName(PluginEntry.Configuration.ConfigFilePath) + basePath;
 
-        private string fullRequiredPath => baseDirectoryPath + requiredPath;
-        private string fullBannedPath => baseDirectoryPath + bannedPath;
-        private string fullApprovedPath => baseDirectoryPath + approvedPath;
+        private string FullRequiredPath => BaseDirectoryPath + requiredPath;
+        private string FullBannedPath => BaseDirectoryPath + bannedPath;
+        private string FullApprovedPath => BaseDirectoryPath + approvedPath;
 
         protected override void MakeConfig()
         {
@@ -235,16 +235,16 @@ namespace R2DSEssentials.Modules
             cfgEnforceApprovedMods = AddConfig("Enforce Approved Mods", false,
                 "Should a list of allowed mods be enforced for connecting players? (Whitelist)");
 
-            if (!Directory.Exists(baseDirectoryPath))
+            if (!Directory.Exists(BaseDirectoryPath))
             {
-                Directory.CreateDirectory(baseDirectoryPath);
+                Directory.CreateDirectory(BaseDirectoryPath);
             }
 
-            if (!File.Exists(fullRequiredPath))
+            if (!File.Exists(FullRequiredPath))
             {
                 Logger.LogInfo("Required Mods file not found, creating new.");
 
-                File.AppendAllLines(fullRequiredPath, requiredModsInfo);
+                File.AppendAllLines(FullRequiredPath, requiredModsInfo);
             }
             else
             {
@@ -252,7 +252,7 @@ namespace R2DSEssentials.Modules
                 List<string> modsList = new List<string>();
 
                 bool infoDone = false;
-                foreach (string s in File.ReadAllLines(fullRequiredPath))
+                foreach (string s in File.ReadAllLines(FullRequiredPath))
                 {
                     if (infoDone)
                     {
@@ -286,8 +286,8 @@ namespace R2DSEssentials.Modules
 
                 if (writeNewInfo)
                 {
-                    File.WriteAllLines(fullRequiredPath, requiredModsInfo);
-                    File.AppendAllLines(fullRequiredPath, modsList);
+                    File.WriteAllLines(FullRequiredPath, requiredModsInfo);
+                    File.AppendAllLines(FullRequiredPath, modsList);
                 }
 
                 foreach (string s in modsList)
@@ -309,11 +309,11 @@ namespace R2DSEssentials.Modules
                 }
             }
 
-            if (!File.Exists(fullBannedPath))
+            if (!File.Exists(FullBannedPath))
             {
                 Logger.LogInfo("Banned Mods file not found, creating new.");
 
-                File.AppendAllLines(fullBannedPath, bannedModsInfo);
+                File.AppendAllLines(FullBannedPath, bannedModsInfo);
             }
             else
             {
@@ -321,7 +321,7 @@ namespace R2DSEssentials.Modules
                 List<string> modsList = new List<string>();
 
                 bool infoDone = false;
-                foreach (string s in File.ReadAllLines(fullBannedPath))
+                foreach (string s in File.ReadAllLines(FullBannedPath))
                 {
                     if (infoDone)
                     {
@@ -355,8 +355,8 @@ namespace R2DSEssentials.Modules
 
                 if (writeNewInfo)
                 {
-                    File.WriteAllLines(fullBannedPath, bannedModsInfo);
-                    File.AppendAllLines(fullBannedPath, modsList);
+                    File.WriteAllLines(FullBannedPath, bannedModsInfo);
+                    File.AppendAllLines(FullBannedPath, modsList);
                 }
 
                 foreach (string s in modsList)
@@ -378,11 +378,11 @@ namespace R2DSEssentials.Modules
                 }
             }
 
-            if (!File.Exists(fullApprovedPath))
+            if (!File.Exists(FullApprovedPath))
             {
                 Logger.LogInfo("Approved Mods file not found, creating new.");
 
-                File.AppendAllLines(fullApprovedPath, approvedModsInfo);
+                File.AppendAllLines(FullApprovedPath, approvedModsInfo);
             }
             else
             {
@@ -390,7 +390,7 @@ namespace R2DSEssentials.Modules
                 List<string> modsList = new List<string>();
 
                 bool infoDone = false;
-                foreach (string s in File.ReadAllLines(fullApprovedPath))
+                foreach (string s in File.ReadAllLines(FullApprovedPath))
                 {
                     if (infoDone)
                     {
@@ -424,8 +424,8 @@ namespace R2DSEssentials.Modules
 
                 if (writeNewInfo)
                 {
-                    File.WriteAllLines(fullApprovedPath, approvedModsInfo);
-                    File.AppendAllLines(fullApprovedPath, modsList);
+                    File.WriteAllLines(FullApprovedPath, approvedModsInfo);
+                    File.AppendAllLines(FullApprovedPath, modsList);
                 }
 
                 foreach (string s in modsList)
@@ -478,19 +478,19 @@ namespace R2DSEssentials.Modules
 
             foreach (ModEntry entry in requiredEntries)
             {
-                tempPrefs.requiredMods.Add(entry.prefEntry);
+                tempPrefs.requiredMods.Add(entry.PrefEntry);
             }
 
             tempPrefs.bannedMods = new List<PrefEntry>();
             foreach (ModEntry entry in bannedEntries)
             {
-                tempPrefs.bannedMods.Add(entry.prefEntry);
+                tempPrefs.bannedMods.Add(entry.PrefEntry);
             }
 
             tempPrefs.approvedMods = new List<PrefEntry>();
             foreach (ModEntry entry in approvedEntries)
             {
-                tempPrefs.approvedMods.Add(entry.prefEntry);
+                tempPrefs.approvedMods.Add(entry.PrefEntry);
             }
 
             prefs = tempPrefs;
