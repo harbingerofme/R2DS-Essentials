@@ -12,6 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		manifest.json = manifest.json
 		README.md = README.md
 	EndProjectSection
+	ProjectSection(FolderGlobals) = preProject
+		D_5_4Github_4R2DS-Essentials_4manifest_1json__JsonSchema = 
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
