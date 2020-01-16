@@ -32,25 +32,42 @@ If you have installed the Dedicated Server Tool through Steam, you'll have to:
 
 ## Modules
 
-### RetrieveUsername
 
-Makes the users appear with their actual steam nickname instead of `???`.
 
 ### ChatCommands
 
-Intercepts chat messages starting with `/` and executes them as though the client send this as a console command to the server. This means a client doesn't need a mod to issue its console commands as they can type them in chat instead.
+Intercepts chat messages starting with `/` and executes them as though the client send this as a console command to the server.
+This means a client doesn't need a mod to issue its console commands as they can type them in chat instead.
 
 ### ExecConfig
 
-After all catalogs have been loaded, execute the server config file of your choice located in `Risk of Rain 2_Data/Config/` (server.cfg by default). Useful for running commands added by mods automatically.
+After all catalogs have been loaded, execute the server config file of your choice located in `Risk of Rain 2_Data/Config/` (server.cfg by default).
+Useful for running commands added by mods automatically.
 
-### MotD
+### FixVanilla
 
-Adds a configurable message of the day that is send to clients when they connect. Supports tokens and unity rich text.
+There are *some* bugs in vanilla RoR2 on Dedicated Servers. This module alleviates some of those.
+
 
 ### HideIP
 
 Hides the IP from the console output window, mostly for preventing privacy leaks during debugging.
+
+### ModSync
+
+*REQUIRES R2API* This module aims to prevent desync and cheating by mods. Comes with extensive configuration.
+
+* Prevent clients with blacklisted mods from connecting.
+* Prevent clients without whitelisted mods from connecting.
+
+### MotD
+
+Adds a configurable message of the day that is send to clients when they connect, enter a specific stage, pass time, and/or complete a certain number of stages.
+Supports tokens and unity rich text.
+
+### RetrieveUsername
+
+Makes the users appear with their actual steam nickname instead of `???`.
   
 ## Planned features
 
