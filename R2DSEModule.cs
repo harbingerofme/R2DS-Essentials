@@ -1,4 +1,4 @@
-﻿using BepInEx.Configuration;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 
 namespace R2DSEssentials
@@ -25,10 +25,10 @@ namespace R2DSEssentials
         {
             Name = name;
             Description = description;
+            Logger = PluginEntry.Log;
             Enabled = AddConfig("_Enabled", defaultEnabled, Description);
             // ReSharper disable once VirtualMemberCallInConstructor  Justification=The consctructor of an abstract class shouldn't be called anyway. 
             MakeConfig();
-            Logger = PluginEntry.Log;
         }
 
         public void ReloadHooks(object _ = null, System.EventArgs __ = null)
