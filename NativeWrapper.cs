@@ -28,7 +28,7 @@ namespace R2DSEssentials
                 try
                 {
                     var nativeDllPtr = LoadUnmanagedLibraryFromResource(Assembly.GetExecutingAssembly(),
-                        "R2DS-Essentials.NativeLibrary." + NativeRemoveGarbageName, NativeRemoveGarbageName);
+                        "R2DSEssentials.NativeLibrary." + NativeRemoveGarbageName, NativeRemoveGarbageName);
                     var nativeFuncPtr = GetProcAddress(nativeDllPtr, "?RemoveGarbage@@YAHXZ");
 
                     var removeGarbage = (NativeRemoveGarbage)Marshal.GetDelegateForFunctionPointer(
