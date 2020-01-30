@@ -153,7 +153,7 @@ namespace R2DSEssentials.Modules
             time = DateTime.Now.AddMinutes(mothValConfig.Value);
 
 
-            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal += messageOnPlayerJoin;
+            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal += MessageOnPlayerJoin;
             Stage.onServerStageBegin += MotrAndMots;
             Run.onRunStartGlobal += ResetStageCount;
             RoR2Application.onFixedUpdate += RoR2Application_onFixedUpdate;
@@ -193,7 +193,7 @@ namespace R2DSEssentials.Modules
 
         protected override void UnHook()
         {
-            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal -= messageOnPlayerJoin;
+            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal -= MessageOnPlayerJoin;
             Stage.onServerStageBegin -= MotrAndMots;
             Run.onRunStartGlobal -= ResetStageCount;
             RoR2Application.onFixedUpdate -= RoR2Application_onFixedUpdate;
@@ -213,7 +213,7 @@ namespace R2DSEssentials.Modules
             return modList;
         }
 
-        private void messageOnPlayerJoin(ILContext il)
+        private void MessageOnPlayerJoin(ILContext il)
         {
             ILCursor c = new ILCursor(il);
             c.GotoNext(MoveType.After,
@@ -225,6 +225,13 @@ namespace R2DSEssentials.Modules
             {
                 if (PluginEntry.Modules.ContainsKey(nameof(RetrieveUsername)) && PluginEntry.Modules[nameof(RetrieveUsername)].IsEnabled)
                 {
+                    var authData = ServerAuthManager.FindAuthData(conn);
+                    if (authData == null)
+                    {
+                        MakeAndSendMotd(conn);
+                        return;
+                    }
+
                     var steamId = ServerAuthManager.FindAuthData(conn).steamId.value;
                     if (RetrieveUsername.UsernamesCache.ContainsKey(steamId))
                     {
@@ -256,8 +263,16 @@ namespace R2DSEssentials.Modules
             string message = motdConfig.Value;
             if (message.Contains("%STEAM%"))
             {
-                string steamId = ServerAuthManager.FindAuthData(conn).steamId.ToString();
-                message = message.Replace("%STEAM%", steamId.Length == 17 ? steamId : "No Steam"); // If length isnt 17 the user either didnt send auth data or doesnt have steam.
+                var authData = ServerAuthManager.FindAuthData(conn);
+                if (authData != null)
+                {
+                    string steamId = ServerAuthManager.FindAuthData(conn).steamId.ToString();
+                    message = message.Replace("%STEAM%", steamId);
+                }
+                else
+                {
+                    message = message.Replace("%STEAM%", "No Auth Data");
+                }
             }
 
             if (message.Contains("%MODLIST%"))
