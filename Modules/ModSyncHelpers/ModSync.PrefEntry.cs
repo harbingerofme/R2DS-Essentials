@@ -18,9 +18,9 @@ namespace R2DSEssentials.Modules.ModSyncHelper
         public bool Check(ModListAPI.ModInfo mod)
         {
             if (mod == null) return false;
-            if (Guid != mod.guid.ToLower()) return false;
-            if (UseMinVersion && mod.version < MinVersion) return false;
-            if (UseMaxVersion && mod.version > MaxVersion) return false;
+            if (Guid != mod.Guid.ToLower()) return false;
+            if (UseMinVersion && mod.Version < MinVersion) return false;
+            if (UseMaxVersion && mod.Version > MaxVersion) return false;
             return true;
         }
 
