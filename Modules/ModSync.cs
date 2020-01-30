@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using BepInEx.Configuration;
@@ -32,33 +31,32 @@ namespace R2DSEssentials.Modules
 
         protected override void Hook()
         {
-            ModListAPI.modlistRecievedFromClient += ModListAPI_modlistRecievedFromClient;
-            ModListAPI.modlistRecievedFromServer += ModListAPI_modlistRecievedFromServer;
+            ModListAPI.ModListReceivedFromClient += ModListAPI_ModListReceivedFromClient;
+            ModListAPI.ModListReceivedFromServer += ModListAPI_ModListReceivedFromServer;
         }
 
         protected override void UnHook()
         {
-            ModListAPI.modlistRecievedFromClient += ModListAPI_modlistRecievedFromClient;
-            ModListAPI.modlistRecievedFromServer += ModListAPI_modlistRecievedFromServer;
+            ModListAPI.ModListReceivedFromClient += ModListAPI_ModListReceivedFromClient;
+            ModListAPI.ModListReceivedFromServer += ModListAPI_ModListReceivedFromServer;
         }
 
-        private void ModListAPI_modlistRecievedFromServer(NetworkConnection connection, ModListAPI.ModList list)
+        private void ModListAPI_ModListReceivedFromServer(NetworkConnection connection, ModListAPI.ModList list)
         {
             Logger.LogWarning("Modlist recieved from server");
-            foreach (ModListAPI.ModInfo mod in list.mods)
+            foreach (ModListAPI.ModInfo mod in list.Mods)
             {
-                Logger.LogWarning(mod.guid + " : " + mod.version);
+                Logger.LogWarning(mod.Guid + " : " + mod.Version);
             }
         }
 
-        private void ModListAPI_modlistRecievedFromClient(NetworkConnection connection, ModListAPI.ModList list,
-            CSteamID steamID)
+        private void ModListAPI_ModListReceivedFromClient(NetworkConnection connection, ModListAPI.ModList list)
         {
-            Logger.LogWarning("Modlist recieved from client with steamID: " + steamID.value);
+            Logger.LogWarning("Modlist recieved from client with connection id: " + connection.connectionId);
 
-            foreach (ModListAPI.ModInfo mod in list.mods)
+            foreach (ModListAPI.ModInfo mod in list.Mods)
             {
-                Logger.LogWarning(mod.guid + " : " + mod.version);
+                Logger.LogWarning(mod.Guid + " : " + mod.Version);
             }
 
             if (!CheckList(list, GetModPrefs()))
@@ -73,7 +71,7 @@ namespace R2DSEssentials.Modules
             bool vanillaCheck = true;
             if (!modPrefs.header.vanillaAllowed)
             {
-                if (clientList.isVanilla)
+                if (clientList.IsVanilla)
                 {
                     Logger.LogWarning("Kicking player due to disallowed vanilla players");
                     vanillaCheck = false;
@@ -84,7 +82,7 @@ namespace R2DSEssentials.Modules
             bool moddedCheck = true;
             if (!modPrefs.header.moddedAllowed)
             {
-                if (!clientList.isVanilla)
+                if (!clientList.IsVanilla)
                 {
                     Logger.LogWarning("Kicking player due to disallowed modded players");
                     moddedCheck = false;
@@ -98,7 +96,7 @@ namespace R2DSEssentials.Modules
                 foreach (PrefEntry entry in modPrefs.requiredMods)
                 {
                     bool tempCheck = false;
-                    foreach (ModListAPI.ModInfo mod in clientList.mods)
+                    foreach (ModListAPI.ModInfo mod in clientList.Mods)
                     {
                         if (entry.Check(mod))
                         {
@@ -118,11 +116,11 @@ namespace R2DSEssentials.Modules
             bool bannedCheck = true;
             if (modPrefs.header.enforceBannedMods)
             {
-                foreach (ModListAPI.ModInfo mod in clientList.mods)
+                foreach (ModListAPI.ModInfo mod in clientList.Mods)
                 {
                     if (!modPrefs.bannedMods.TrueForAll((x) => !x.Check(mod)))
                     {
-                        Logger.LogWarning("Kicking player due to banned mod: " + mod.guid);
+                        Logger.LogWarning("Kicking player due to banned mod: " + mod.Guid);
                         bannedCheck = false;
                     }
                 }
@@ -132,7 +130,7 @@ namespace R2DSEssentials.Modules
             bool allowedCheck = true;
             if (modPrefs.header.enforceApprovedMods)
             {
-                foreach (ModListAPI.ModInfo mod in clientList.mods)
+                foreach (ModListAPI.ModInfo mod in clientList.Mods)
                 {
                     bool tempCheck = false;
                     foreach (PrefEntry entry in modPrefs.approvedMods)
@@ -156,7 +154,7 @@ namespace R2DSEssentials.Modules
 
                     if (!tempCheck)
                     {
-                        Logger.LogWarning("Kicking player due to unapproved mod: " + mod.guid);
+                        Logger.LogWarning("Kicking player due to unapproved mod: " + mod.Guid);
                     }
                 }
             }
