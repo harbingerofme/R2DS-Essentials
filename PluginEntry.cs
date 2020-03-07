@@ -156,7 +156,7 @@ namespace R2DSEssentials
                         _consoleCommand.Remove(_consoleCommand.Length - 1, 1);
                     }
                 }
-                else
+                else if (keyInfo.Key != ConsoleKey.Escape)
                 {
                     Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
                     Console.Write(keyInfo.KeyChar);
