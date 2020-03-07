@@ -2,10 +2,12 @@
 using Facepunch.Steamworks;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using R2DSEssentials.Util;
 using RoR2;
 using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
+using Console = RoR2.Console;
 
 namespace R2DSEssentials.Modules
 {
@@ -27,10 +29,31 @@ namespace R2DSEssentials.Modules
 
             IL.RoR2.Chat.CCSay += ServerSay;
 
-            On.LeTai.Asset.TranslucentImage.TranslucentImage.Start += FixCameraErrorSpam;
-            On.LeTai.Asset.TranslucentImage.TranslucentImage.LateUpdate += FixCameraErrorSpamPartTwo;
+            IL.RoR2.UI.MPEventSystem.Update += DisablePauseMenuUI;
 
             On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += EndAuthOnClientDisconnect;
+        }
+
+        private void DisablePauseMenuUI(ILContext il)
+        {
+            var cursor = new ILCursor(il);
+            ILLabel retLabel = null;
+            ILLabel isBatchLabel;
+
+            cursor.GotoNext(MoveType.After,
+                i => i.MatchBrtrue(out retLabel),
+                i => i.MatchCallOrCallvirt<Console>("get_instance")
+            );
+            cursor.Index--;
+
+            cursor.Emit(OpCodes.Call, typeof(Application).GetMethod("get_isBatchMode", Reflection.AllFlags));
+            isBatchLabel = cursor.MarkLabel();
+            cursor.Emit(OpCodes.Brtrue_S, retLabel);
+
+            cursor.GotoPrev(
+                i => i.MatchBrfalse(out _)
+            );
+            cursor.Next.Operand = isBatchLabel;
         }
 
         protected override void MakeConfig()
@@ -42,8 +65,7 @@ namespace R2DSEssentials.Modules
         {
             IL.RoR2.Chat.CCSay -= ServerSay;
 
-            On.LeTai.Asset.TranslucentImage.TranslucentImage.Start -= FixCameraErrorSpam;
-            On.LeTai.Asset.TranslucentImage.TranslucentImage.LateUpdate -= FixCameraErrorSpamPartTwo;
+            IL.RoR2.UI.MPEventSystem.Update -= DisablePauseMenuUI;
 
             On.RoR2.Networking.GameNetworkManager.OnServerDisconnect -= EndAuthOnClientDisconnect;
         }
@@ -78,22 +100,6 @@ namespace R2DSEssentials.Modules
                 i => i.MatchBrfalse(out _)
             );
             cursor.Next.Operand = label;
-        }
-
-        private static void FixCameraErrorSpam(On.LeTai.Asset.TranslucentImage.TranslucentImage.orig_Start orig, LeTai.Asset.TranslucentImage.TranslucentImage self)
-        {
-            if (!Application.isBatchMode)
-            {
-                orig(self);
-            }
-        }
-
-        private static void FixCameraErrorSpamPartTwo(On.LeTai.Asset.TranslucentImage.TranslucentImage.orig_LateUpdate orig, LeTai.Asset.TranslucentImage.TranslucentImage self)
-        {
-            if (!Application.isBatchMode)
-            {
-                orig(self);
-            }
         }
 
         private static void EndAuthOnClientDisconnect(On.RoR2.Networking.GameNetworkManager.orig_OnServerDisconnect orig, GameNetworkManager self, NetworkConnection conn)

@@ -72,7 +72,6 @@ namespace R2DSEssentials
 
             using (var stream = assembly.GetManifestResourceStream(libraryResourceName))
             {
-
                 byte[] data = new BinaryReader(stream).ReadBytes((int)stream.Length);
                 File.WriteAllBytes(_dllPath, data);
             }
