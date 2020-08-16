@@ -2,14 +2,13 @@
 using RoR2;
 using UnityEngine.Networking;
 using MonoMod.Cil;
-using static MonoMod.Cil.RuntimeILReferenceBag.FastDelegateInvokers;
 using Mono.Cecil.Cil;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using System;
 using RoR2.Networking;
-using RoR2.ConVar;
 using UnityEngine;
+using static R2DSEssentials.Util.Networking;
 
 namespace R2DSEssentials.Modules
 {
@@ -301,14 +300,6 @@ namespace R2DSEssentials.Modules
             return message;
         }
 
-        private static void SendPrivateMessage(Chat.ChatMessageBase message, NetworkConnection connection)
-        {
-            NetworkWriter writer = new NetworkWriter();
-            writer.StartMessage((short)59);
-            writer.Write(message.GetTypeIndex());
-            writer.Write((MessageBase)message);
-            writer.FinishMessage();
-            connection.SendWriter(writer, RoR2.Networking.QosChannelIndex.chat.intVal);
-        }
+        
     }
 }

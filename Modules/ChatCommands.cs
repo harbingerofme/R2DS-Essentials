@@ -1,6 +1,6 @@
 ﻿using MonoMod.RuntimeDetour;
-using R2API.Utils;
 using RoR2;
+using System.Reflection;
 
 namespace R2DSEssentials.Modules
 {
@@ -26,14 +26,14 @@ namespace R2DSEssentials.Modules
 
             _hookConfig = new HookConfig { ManualApply = true, Priority = 2};
 
-            _runCmdHook = new Hook(typeof(Console).GetMethodCached("RunCmd"),
-                typeof(ChatCommands).GetMethodCached(nameof(Console_RunCmd)), _hookConfig);
+            _runCmdHook = new Hook(typeof(Console).GetMethod("RunCmd",BindingFlags.Instance | BindingFlags.NonPublic),
+                typeof(ChatCommands).GetMethod(nameof(Console_RunCmd), BindingFlags.Instance | BindingFlags.NonPublic), _hookConfig);
             _origRunCmd = _runCmdHook.GenerateTrampoline<On.RoR2.Console.orig_RunCmd>();
 
             _runCmdHook.Apply();
         }
 
-        private void Console_RunCmd(On.RoR2.Console.orig_RunCmd orig, RoR2.Console self, RoR2.Console.CmdSender sender, string concommandName, System.Collections.Generic.List<string> userArgs)
+        private void Console_RunCmd(On.RoR2.Console.orig_RunCmd _, Console self, Console.CmdSender sender, string concommandName, System.Collections.Generic.List<string> userArgs)
         {
             if (concommandName == "say" && userArgs != null && userArgs.Count>=1 && userArgs[0].StartsWith("/"))
             {
