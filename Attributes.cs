@@ -47,4 +47,7 @@ namespace R2DSEssentials
     {
         public string GUID;
     }
+
+    [AttributeUsage(AttributeTargets.Assembly)]
+    public class ManualNetworkRegistrationAttribute : Attribute { }
 }
