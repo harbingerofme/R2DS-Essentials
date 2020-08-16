@@ -164,6 +164,12 @@ namespace R2DSEssentials
             }
         }
 
+        public static void InvokeCMD(string commandname, params object[] arguments)
+        {
+
+            RoR2.Console.instance.SubmitCmd(null, string.Join(" ", commandname, arguments));
+        }
+
         private void LoadConVars()
         {
             if (ConvarsToAdd.Count > 0)

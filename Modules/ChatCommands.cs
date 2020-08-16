@@ -33,8 +33,7 @@ namespace R2DSEssentials.Modules
             _runCmdHook.Apply();
         }
 
-        // ReSharper disable once UnusedMember.Local
-        private static void Console_RunCmd(Console self, NetworkUser sender, string concommandName, System.Collections.Generic.List<string> userArgs)
+        private void Console_RunCmd(On.RoR2.Console.orig_RunCmd orig, RoR2.Console self, RoR2.Console.CmdSender sender, string concommandName, System.Collections.Generic.List<string> userArgs)
         {
             if (concommandName == "say" && userArgs != null && userArgs.Count>=1 && userArgs[0].StartsWith("/"))
             {

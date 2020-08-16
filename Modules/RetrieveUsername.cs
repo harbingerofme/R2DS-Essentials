@@ -35,14 +35,15 @@ namespace R2DSEssentials.Modules
         protected override void Hook()
         {
             On.RoR2.NetworkPlayerName.GetResolvedName += OnGetResolvedName;
-            Run.OnServerGameOver += EmptyCachesOnGameOver;
+            Run.onServerGameOver += EmptyCachesOnGameOver;
             On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += RemoveCacheOnPlayerDisconnect;
         }
+
 
         protected override void UnHook()
         {
             On.RoR2.NetworkPlayerName.GetResolvedName -= OnGetResolvedName;
-            Run.OnServerGameOver -= EmptyCachesOnGameOver;
+            Run.onServerGameOver -= EmptyCachesOnGameOver;
             On.RoR2.Networking.GameNetworkManager.OnServerDisconnect -= RemoveCacheOnPlayerDisconnect;
         }
 
@@ -65,7 +66,7 @@ namespace R2DSEssentials.Modules
             return orig(ref self);
         }
 
-        private static void EmptyCachesOnGameOver(Run self, GameResultType gameResult)
+        private static void EmptyCachesOnGameOver(Run _, GameEndingDef __)
         {
             UsernamesCache.Clear();
             RequestCache.Clear();
