@@ -13,7 +13,6 @@ using RoR2.ConVar;
 
 namespace R2DSEssentials
 {
-    [BepInDependency(R2API.R2API.PluginGUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInPlugin(ModGuid, ModName, ModVer)]
     public sealed class PluginEntry : BaseUnityPlugin
     {
