@@ -1,4 +1,8 @@
 using System;
+using R2API.Utils;
+
+// Make R2API ignore R2DSE so that it doesnt get registered the network mod list
+[assembly: ManualNetworkRegistration]
 
 namespace R2DSEssentials
 {
@@ -47,7 +51,10 @@ namespace R2DSEssentials
     {
         public string GUID;
     }
+}
 
+namespace R2API.Utils
+{
     [AttributeUsage(AttributeTargets.Assembly)]
     public class ManualNetworkRegistrationAttribute : Attribute { }
 }
