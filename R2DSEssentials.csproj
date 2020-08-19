@@ -17,10 +17,12 @@
     <Compile Remove="libs\**" />
     <EmbeddedResource Remove="libs\**" />
     <None Remove="libs\**" />
+    <Compile Remove="Modules\template.cs" />
     <None Include="LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="Modules\template.cs" />
   </ItemGroup>
 
   <ItemGroup>

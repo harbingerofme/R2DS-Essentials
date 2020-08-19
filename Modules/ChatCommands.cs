@@ -27,7 +27,7 @@ namespace R2DSEssentials.Modules
             _hookConfig = new HookConfig { ManualApply = true, Priority = 2};
 
             _runCmdHook = new Hook(typeof(Console).GetMethod("RunCmd",BindingFlags.Instance | BindingFlags.NonPublic),
-                typeof(ChatCommands).GetMethod(nameof(Console_RunCmd), BindingFlags.Instance | BindingFlags.NonPublic), _hookConfig);
+                typeof(ChatCommands).GetMethod(nameof(Console_RunCmd), BindingFlags.Instance | BindingFlags.NonPublic), this, _hookConfig);
             _origRunCmd = _runCmdHook.GenerateTrampoline<On.RoR2.Console.orig_RunCmd>();
 
             _runCmdHook.Apply();

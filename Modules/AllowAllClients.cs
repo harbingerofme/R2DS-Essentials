@@ -7,10 +7,10 @@ using UnityEngine.Networking;
 
 namespace R2DSEssentials.Modules
 {
-    [Module(ModuleName, ModuleDescription, DefaultEnabled)]
+    //[Module(ModuleName, ModuleDescription, DefaultEnabled)]
     class AllowAllClients : R2DSEModule
     {
-        public const string ModuleName = nameof(template);
+        public const string ModuleName = nameof(AllowAllClients);
         public const string ModuleDescription = "Allows any kind of client to join.";
         public const bool DefaultEnabled = true;
 
