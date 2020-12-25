@@ -13,7 +13,7 @@ using Console = RoR2.Console;
 namespace R2DSEssentials.Modules
 {
     [Module(ModuleName, ModuleDescription, DefaultEnabled)]
-    internal sealed class RetrieveUsername : R2DSEModule
+    public sealed class RetrieveUsername : R2DSEModule
     {
         public const string ModuleName = nameof(RetrieveUsername);
         public const string ModuleDescription = "Retrieve player usernames through third party website. Don't need a steam api key.";
@@ -22,7 +22,7 @@ namespace R2DSEssentials.Modules
         private ConfigEntry<bool> _enableBlackListRichNames;
         private ConfigEntry<string> _blackListRichNames;
 
-        internal static event Action OnUsernameUpdated;
+        public static event Action OnUsernameUpdated;
 
         internal static readonly Dictionary<ulong, string> UsernamesCache = new Dictionary<ulong, string>();
         private static readonly List<ulong> RequestCache = new List<ulong>();
