@@ -171,7 +171,6 @@ namespace R2DSEssentials.Modules
                                 SyncNetworkUserVarTest(networkUser);
 
                                 OnUsernameUpdated?.Invoke();
-                                OnUsernameUpdated = null;
                             }
                         }    
                     }
