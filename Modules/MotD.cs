@@ -238,10 +238,12 @@ namespace R2DSEssentials.Modules
                     }
                     else
                     {
-                        RetrieveUsername.OnUsernameUpdated += () =>
+                        void del()
                         {
                             MakeAndSendMotd(conn);
+                            RetrieveUsername.OnUsernameUpdated -= del;
                         };
+                        RetrieveUsername.OnUsernameUpdated += del;
                     }
                 }
                 else
