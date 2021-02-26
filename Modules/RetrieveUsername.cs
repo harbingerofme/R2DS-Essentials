@@ -109,8 +109,7 @@ namespace R2DSEssentials.Modules
 
         private IEnumerator WebRequestCoroutine(ulong steamId)
         {
-            const string regexForLookUp = "<dd class=\"value\"><a href=\"(.*?)\"";
-            const string regexForPersonaName = "\"personaname\":\"(.*?)\"";
+            const string regexForLookUp = "<dt class=\"key\">name<\\/dt>\\s*<dd class=\"value\">(.*)<\\/dd>";
 
             var ioUrlRequest = "https://steamid.io/lookup/" + steamId;
 
@@ -122,58 +121,46 @@ namespace R2DSEssentials.Modules
                 var rx = new Regex(regexForLookUp,
                     RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-                var steamProfileUrl = rx.Match(webRequest.downloadHandler.text).Groups[1].ToString();
+                var nameFromRegex = rx.Match(webRequest.downloadHandler.text).Groups[1].ToString();
 
-                webRequest = UnityWebRequest.Get(steamProfileUrl);
-
-                yield return webRequest.SendWebRequest();
-
-                if (!webRequest.isNetworkError)
+                if (!nameFromRegex.Equals(""))
                 {
-                    rx = new Regex(regexForPersonaName,
-                        RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                    var gotBlackListed = false;
 
-                    var nameFromRegex = rx.Match(webRequest.downloadHandler.text).Groups[1].ToString();
-
-                    if (!nameFromRegex.Equals(""))
+                    if (_enableBlackListRichNames.Value)
                     {
-                        var gotBlackListed = false;
+                        var blackList = _blackListRichNames.Value.Split(',');
 
-                        if (_enableBlackListRichNames.Value)
+                        foreach (var tag in blackList)
                         {
-                            var blackList = _blackListRichNames.Value.Split(',');
-
-                            foreach (var tag in blackList)
+                            var bannedTag = "&lt;" + tag + "=";
+                            if (nameFromRegex.Contains(bannedTag))
                             {
-                                var bannedTag = "&lt;" + tag + "=";
-                                if (nameFromRegex.Contains(bannedTag))
-                                {
-                                    var userToKick = Util.Networking.GetNetworkUserFromSteamId(steamId);
-                                    var playerId = Util.Networking.GetPlayerIndexFromNetworkUser(userToKick);
+                                var userToKick = Util.Networking.GetNetworkUserFromSteamId(steamId);
+                                var playerId = Util.Networking.GetPlayerIndexFromNetworkUser(userToKick);
 
-                                    Console.instance.SubmitCmd(null, $"kick {playerId}");
-                                    gotBlackListed = true;
-                                }
+                                Console.instance.SubmitCmd(null, $"kick {playerId}");
+                                gotBlackListed = true;
                             }
                         }
-
-                        if (!UsernamesCache.ContainsKey(steamId) && !gotBlackListed)
-                        {
-                            UsernamesCache.Add(steamId, nameFromRegex);
-
-                            var networkUser = Util.Networking.GetNetworkUserFromSteamId(steamId);
-                            if (networkUser != null)
-                            {
-                                Logger.LogInfo($"New player : {nameFromRegex} connected. (STEAM:{steamId})");
-                                networkUser.userName = nameFromRegex;
-
-                                // Sync with other players by forcing dirty syncVar ?
-                                SyncNetworkUserVarTest(networkUser);
-
-                                OnUsernameUpdated?.Invoke();
-                            }
-                        }    
                     }
+
+                    if (!UsernamesCache.ContainsKey(steamId) && !gotBlackListed)
+                    {
+                        UsernamesCache.Add(steamId, nameFromRegex);
+
+                        var networkUser = Util.Networking.GetNetworkUserFromSteamId(steamId);
+                        if (networkUser != null)
+                        {
+                            Logger.LogInfo($"New player : {nameFromRegex} connected. (STEAM:{steamId})");
+                            networkUser.userName = nameFromRegex;
+
+                            // Sync with other players by forcing dirty syncVar ?
+                            SyncNetworkUserVarTest(networkUser);
+
+                            OnUsernameUpdated?.Invoke();
+                        }
+                    }    
                 }
             }
 
