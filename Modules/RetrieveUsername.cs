@@ -1,4 +1,4 @@
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using Facepunch.Steamworks;
 using RoR2;
 using RoR2.Networking;

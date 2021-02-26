@@ -1,10 +1,10 @@
-using BepInEx.Configuration;
+﻿using BepInEx.Configuration;
 using Console = RoR2.Console;
 
 namespace R2DSEssentials.Modules
 {
     [Module(ModuleName, ModuleDescription, DefaultEnabled, ModuleAttribute.StartupTarget.Awake)]
-    internal sealed class ExecConfig : R2DSEModule
+    public sealed class ExecConfig : R2DSEModule
     {
         public const string ModuleName = nameof(ExecConfig);
         public const string ModuleDescription = "(Re) Execute the server config file of your choice located in Risk of Rain 2_Data/Config/ (server.cfg by default).";

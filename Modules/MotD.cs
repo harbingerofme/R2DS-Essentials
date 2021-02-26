@@ -1,4 +1,4 @@
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
@@ -14,7 +14,7 @@ namespace R2DSEssentials.Modules
 {
     [Module(ModuleName, ModuleDescription, DefaultEnabled)]
     [ModuleDependency(nameof(RetrieveUsername), ModuleDependency.DependencyType.Soft)]
-    internal sealed class MotD : R2DSEModule
+    public sealed class MotD : R2DSEModule
     {
         public const string ModuleName = nameof(MotD);
         public const string ModuleDescription = "Sends a configurable message to clients upon joining";

@@ -1,8 +1,8 @@
-using RoR2;
+﻿using RoR2;
 
 namespace R2DSEssentials.Util
 {
-    static class Console
+    public static class Console
     {
         public static string MergeArgs(ConCommandArgs args, int fromIndex)
         {

@@ -1,6 +1,6 @@
 ﻿using BepInEx.Configuration;
-using RoR2.ConVar;
 using RoR2;
+using RoR2.ConVar;
 
 namespace R2DSEssentials
 {

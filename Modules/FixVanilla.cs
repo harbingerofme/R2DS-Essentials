@@ -1,4 +1,4 @@
-using Facepunch.Steamworks;
+﻿using Facepunch.Steamworks;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2DSEssentials.Util;
@@ -12,7 +12,7 @@ using Console = RoR2.Console;
 namespace R2DSEssentials.Modules
 {
     [Module(ModuleName, ModuleDescription, DefaultEnabled)]
-    class FixVanilla : R2DSEModule
+    public class FixVanilla : R2DSEModule
     {
         public const string ModuleName = nameof(FixVanilla);
 

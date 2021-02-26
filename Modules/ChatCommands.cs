@@ -1,11 +1,11 @@
-using MonoMod.RuntimeDetour;
+﻿using MonoMod.RuntimeDetour;
 using RoR2;
 using System.Reflection;
 
 namespace R2DSEssentials.Modules
 {
     [Module(ModuleName, ModuleDescription, DefaultEnabled)]
-    class ChatCommands : R2DSEModule
+    public sealed class ChatCommands : R2DSEModule
     {
         public const string ModuleName = nameof(ChatCommands);
         public const string ModuleDescription = "Capture messages beginning with '/' and consider them as though a user send them as a command. WIP";

@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace R2DSEssentials.Modules
 {
     [Module(ModuleName, ModuleDescription, DefaultEnabled)]
-    class HideIP : R2DSEModule
+    public sealed class HideIP : R2DSEModule
     {
         public const string ModuleName = nameof(HideIP);
         public const string ModuleDescription = "Hides the IP from the console. This is useful if you're writing guides on a local machine and don't want your local ip adress to leak.";
