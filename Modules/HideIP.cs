@@ -1,5 +1,3 @@
-﻿
-
 using UnityEngine;
 
 namespace R2DSEssentials.Modules
@@ -27,7 +25,7 @@ namespace R2DSEssentials.Modules
 
         protected override void MakeConfig()
         {
-           //can be empty.
+            //can be empty.
         }
 
         protected override void UnHook()

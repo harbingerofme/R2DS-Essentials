@@ -1,11 +1,11 @@
-﻿using System;
+using BepInEx.Configuration;
+using Facepunch.Steamworks;
+using RoR2;
+using RoR2.Networking;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using BepInEx.Configuration;
-using RoR2;
-using Facepunch.Steamworks;
-using RoR2.Networking;
 using UnityEngine;
 using UnityEngine.Networking;
 using Console = RoR2.Console;
@@ -17,7 +17,7 @@ namespace R2DSEssentials.Modules
     {
         public const string ModuleName = nameof(RetrieveUsername);
         public const string ModuleDescription = "Retrieve player usernames through third party website. Don't need a steam api key.";
-        public const bool   DefaultEnabled = true;
+        public const bool DefaultEnabled = true;
 
         private ConfigEntry<bool> _enableBlackListRichNames;
         private ConfigEntry<string> _blackListRichNames;
@@ -31,14 +31,12 @@ namespace R2DSEssentials.Modules
         {
         }
 
-
         protected override void Hook()
         {
             On.RoR2.NetworkPlayerName.GetResolvedName += OnGetResolvedName;
             Run.onServerGameOver += EmptyCachesOnGameOver;
             On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += RemoveCacheOnPlayerDisconnect;
         }
-
 
         protected override void UnHook()
         {
@@ -103,7 +101,7 @@ namespace R2DSEssentials.Modules
                 RequestCache.Add(steamId);
                 PluginEntry.Instance.StartCoroutine(WebRequestCoroutine(steamId));
             }
-            
+
             return unkString;
         }
 
@@ -160,7 +158,7 @@ namespace R2DSEssentials.Modules
 
                             OnUsernameUpdated?.Invoke();
                         }
-                    }    
+                    }
                 }
             }
 

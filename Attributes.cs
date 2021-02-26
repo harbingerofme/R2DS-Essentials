@@ -1,5 +1,5 @@
-using System;
 using R2API.Utils;
+using System;
 
 // Make R2API ignore R2DSE so that it doesnt get registered the network mod list
 [assembly: ManualNetworkRegistration]
@@ -13,6 +13,7 @@ namespace R2DSEssentials
         public readonly bool DefaultEnabled;
         public readonly string Description;
         public StartupTarget target;
+
         public ModuleAttribute(string name, string description, bool defaultEnabled, StartupTarget target = StartupTarget.Awake)
         {
             Name = name;
@@ -33,6 +34,7 @@ namespace R2DSEssentials
     {
         public readonly string Dependency;
         public readonly DependencyType Type;
+
         public ModuleDependency(string dependency, DependencyType type = DependencyType.Hard)
         {
             Dependency = dependency;

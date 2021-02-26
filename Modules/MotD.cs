@@ -1,13 +1,13 @@
-﻿using BepInEx;
-using RoR2;
-using UnityEngine.Networking;
-using MonoMod.Cil;
-using Mono.Cecil.Cil;
-using System.Collections.Generic;
+using BepInEx;
 using BepInEx.Configuration;
-using System;
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using RoR2;
 using RoR2.Networking;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using static R2DSEssentials.Util.Networking;
 
 namespace R2DSEssentials.Modules
@@ -18,8 +18,7 @@ namespace R2DSEssentials.Modules
     {
         public const string ModuleName = nameof(MotD);
         public const string ModuleDescription = "Sends a configurable message to clients upon joining";
-        public const bool   DefaultEnabled = true;
-
+        public const bool DefaultEnabled = true;
 
         private const string _defaultMOTDValue = "<style=cIsDamage>Welcome</style> <style=cIsUtility>%USER%</style> (<color=yellow>%STEAM%</color>) - Time : <color=green>%TIME%</color>. This server runs: %MODLIST%";
         private const string _MOTDHelp = "You can use the following tokens: %STEAM%, %MODLIST%, %USER%, %TIME%. You can also use Unity Rich Text.";
@@ -33,24 +32,24 @@ namespace R2DSEssentials.Modules
         private const string _defaultMOTHValue = "<style=cDeath>It's been 4 hours!</style>";
         private const string _MOTHHelp = _MOTDHelp;
 
-        private const int _defaultMOTHTimeValue = 4*60;
+        private const int _defaultMOTHTimeValue = 4 * 60;
         private const string _MOTHTimeHelp = "The amount of minutes between MOTH messages.";
 
         private const string _MOTSHelp = @"Replace with """" to ignore this.";
 
         private string modList = "";
-        
-        private static readonly ConfigConVar<string> MotdConVar = new ConfigConVar<string>("motd",ConVarFlags.None, _defaultMOTDValue, _MOTDHelp);
+
+        private static readonly ConfigConVar<string> MotdConVar = new ConfigConVar<string>("motd", ConVarFlags.None, _defaultMOTDValue, _MOTDHelp);
         private static readonly ConfigConVar<string> MotrConVar = new ConfigConVar<string>("motr", ConVarFlags.None, _defaultMOTRValue, _MOTRHelp);
         private static readonly ConfigConVar<string> MothConVar = new ConfigConVar<string>("moth", ConVarFlags.None, _defaultMOTHValue, _MOTHHelp);
         private static readonly ConfigConVar<int> MotrValConVar = new ConfigConVar<int>("motr_value", ConVarFlags.None, "0", _MOTRRoundsHelp);
         private static readonly ConfigConVar<int> MothValConVar = new ConfigConVar<int>("moth_value", ConVarFlags.None, "0", _MOTHTimeHelp);
 
-        ConfigEntry<string> motdConfig;
-        ConfigEntry<string> motrConfig;
-        ConfigEntry<string> mothConfig;
-        ConfigEntry<int> motrValConfig;
-        ConfigEntry<int> mothValConfig;
+        private ConfigEntry<string> motdConfig;
+        private ConfigEntry<string> motrConfig;
+        private ConfigEntry<string> mothConfig;
+        private ConfigEntry<int> motrValConfig;
+        private ConfigEntry<int> mothValConfig;
 
         private int lastStageCount;
         private DateTime time;
@@ -61,7 +60,6 @@ namespace R2DSEssentials.Modules
         {
             lastStageCount = -1;
         }
-
 
         protected override void MakeConfig()
         {
@@ -80,7 +78,7 @@ namespace R2DSEssentials.Modules
             return entry;
         }
 
-        [ConCommand(commandName ="mots", flags = ConVarFlags.None, helpText = "mots <stage> <message>. " + _MOTDHelp)]
+        [ConCommand(commandName = "mots", flags = ConVarFlags.None, helpText = "mots <stage> <message>. " + _MOTDHelp)]
         private static void cc_mots(ConCommandArgs args)
         {
             args.CheckArgumentCount(1);
@@ -88,14 +86,14 @@ namespace R2DSEssentials.Modules
             {
                 Debug.LogWarning("The Motd module is not enabled.");
             }
-            var MOTD = (MotD) PluginEntry.Modules[ModuleName];
+            var MOTD = (MotD)PluginEntry.Modules[ModuleName];
             string stage = args.GetArgString(0).ToLower();
             if (args.Count < 2)
             {
                 string mots = MOTD.GetMotS(args.GetArgString(0));
-                if(mots == "")
+                if (mots == "")
                 {
-                    Debug.LogFormat("Stage '{0}' does not have any message set.",stage);
+                    Debug.LogFormat("Stage '{0}' does not have any message set.", stage);
                 }
                 else
                 {
@@ -116,13 +114,13 @@ namespace R2DSEssentials.Modules
             var configDef = new ConfigDefinition(ModuleName, name);
             if (PluginEntry.Configuration.ContainsKey(configDef))
             {
-                stageMessages.Add(name,PluginEntry.Configuration.Bind<string>(configDef,""));
+                stageMessages.Add(name, PluginEntry.Configuration.Bind<string>(configDef, ""));
                 return stageMessages[name].Value;
             }
             return "";
         }
 
-        public void SetMotS(string stageName,string newArgs)
+        public void SetMotS(string stageName, string newArgs)
         {
             string name = stageName.ToLower();
             if (stageMessages.ContainsKey(name))
@@ -141,27 +139,24 @@ namespace R2DSEssentials.Modules
                 {
                     ConfigEntry<string> entry = PluginEntry.Configuration.Bind<string>(configDef, "", new ConfigDescription(_MOTSHelp));
                     entry.Value = newArgs;
-                    stageMessages.Add(name,entry);
+                    stageMessages.Add(name, entry);
                 }
             }
         }
-
 
         protected override void Hook()
         {
             time = DateTime.Now.AddMinutes(mothValConfig.Value);
 
-
             IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal += MessageOnPlayerJoin;
             Stage.onServerStageBegin += MotrAndMots;
             Run.onRunStartGlobal += ResetStageCount;
             RoR2Application.onFixedUpdate += RoR2Application_onFixedUpdate;
-
         }
 
         private void RoR2Application_onFixedUpdate()
         {
-            if (mothValConfig.Value > 0 && mothConfig.Value != "" && time<DateTime.Now)
+            if (mothValConfig.Value > 0 && mothConfig.Value != "" && time < DateTime.Now)
             {
                 time = time.AddMinutes(mothValConfig.Value);
                 Chat.SendBroadcastChat(new Chat.SimpleChatMessage { baseToken = "{0}", paramTokens = new[] { mothConfig.Value } });
@@ -170,12 +165,12 @@ namespace R2DSEssentials.Modules
 
         private void ResetStageCount(Run obj)
         {
-           lastStageCount = -1;
+            lastStageCount = -1;
         }
 
         private void MotrAndMots(Stage obj)
         {
-            if(motrConfig.Value!= "" && motrValConfig.Value>0 && Run.instance && Run.instance.stageClearCount != lastStageCount)
+            if (motrConfig.Value != "" && motrValConfig.Value > 0 && Run.instance && Run.instance.stageClearCount != lastStageCount)
             {
                 lastStageCount = Run.instance.stageClearCount;
                 if (lastStageCount % motrValConfig.Value == 0)
@@ -301,7 +296,5 @@ namespace R2DSEssentials.Modules
 
             return message;
         }
-
-        
     }
 }

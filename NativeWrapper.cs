@@ -12,12 +12,15 @@ namespace R2DSEssentials
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr LoadLibrary(string dllToLoad);
+
         [DllImport("kernel32.dll")]
         private static extern IntPtr GetProcAddress(IntPtr hModule, string exposedFuncName);
+
         [DllImport("kernel32.dll")]
         private static extern bool FreeLibrary(IntPtr hModule);
 
         private const string NativeRemoveGarbageName = "UnityPlayerRemoveGarbage.dll";
+
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         private delegate int NativeRemoveGarbage();
 
@@ -63,7 +66,6 @@ namespace R2DSEssentials
             }
         }
 
-        
         private static IntPtr LoadUnmanagedLibraryFromResource(Assembly assembly, string libraryResourceName, string libraryName)
         {
             // ReSharper disable AssignNullToNotNullAttribute

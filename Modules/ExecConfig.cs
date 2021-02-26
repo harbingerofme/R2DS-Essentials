@@ -1,4 +1,4 @@
-﻿using BepInEx.Configuration;
+using BepInEx.Configuration;
 using Console = RoR2.Console;
 
 namespace R2DSEssentials.Modules
@@ -8,14 +8,13 @@ namespace R2DSEssentials.Modules
     {
         public const string ModuleName = nameof(ExecConfig);
         public const string ModuleDescription = "(Re) Execute the server config file of your choice located in Risk of Rain 2_Data/Config/ (server.cfg by default).";
-        public const bool   DefaultEnabled = true;
+        public const bool DefaultEnabled = true;
 
         private ConfigEntry<string> _configFileName;
 
         public ExecConfig(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
         {
         }
-
 
         protected override void Hook()
         {

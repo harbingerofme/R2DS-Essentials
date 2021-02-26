@@ -1,4 +1,4 @@
-﻿using MonoMod.RuntimeDetour;
+using MonoMod.RuntimeDetour;
 using RoR2;
 using System.Reflection;
 
@@ -24,10 +24,10 @@ namespace R2DSEssentials.Modules
             // Higher priority to make sure this hook executed before the one from DebugToolkit if it exists
             // It'll make sure correct permissions are applied if needed.
 
-            _hookConfig = new HookConfig { ManualApply = true, Priority = 2};
+            _hookConfig = new HookConfig { ManualApply = true, Priority = 2 };
 
-            _runCmdHook = new Hook(typeof(Console).GetMethod("RunCmd",BindingFlags.Instance | BindingFlags.NonPublic),
-                typeof(ChatCommands).GetMethod(nameof(Console_RunCmd), BindingFlags.Instance | BindingFlags.NonPublic),this, _hookConfig);
+            _runCmdHook = new Hook(typeof(Console).GetMethod("RunCmd", BindingFlags.Instance | BindingFlags.NonPublic),
+                typeof(ChatCommands).GetMethod(nameof(Console_RunCmd), BindingFlags.Instance | BindingFlags.NonPublic), this, _hookConfig);
             _origRunCmd = _runCmdHook.GenerateTrampoline<On.RoR2.Console.orig_RunCmd>();
 
             _runCmdHook.Apply();
@@ -35,7 +35,7 @@ namespace R2DSEssentials.Modules
 
         private void Console_RunCmd(On.RoR2.Console.orig_RunCmd _, Console self, Console.CmdSender sender, string concommandName, System.Collections.Generic.List<string> userArgs)
         {
-            if (concommandName == "say" && userArgs != null && userArgs.Count>=1 && userArgs[0].StartsWith("/"))
+            if (concommandName == "say" && userArgs != null && userArgs.Count >= 1 && userArgs[0].StartsWith("/"))
             {
                 var oldArgs = userArgs[0].Split(' ');
                 concommandName = oldArgs[0].Substring(1);
@@ -54,7 +54,7 @@ namespace R2DSEssentials.Modules
 
         protected override void MakeConfig()
         {
-           //can be empty.
+            //can be empty.
         }
 
         protected override void UnHook()

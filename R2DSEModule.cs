@@ -10,7 +10,8 @@ namespace R2DSEssentials
 
         protected ManualLogSource Logger;
 
-        public bool IsEnabled {
+        public bool IsEnabled
+        {
             get { return PreviouslyEnabled; }
             set
             {
@@ -27,7 +28,7 @@ namespace R2DSEssentials
             Description = description;
             Logger = PluginEntry.Log;
             Enabled = AddConfig("_Enabled", defaultEnabled, Description);
-            // ReSharper disable once VirtualMemberCallInConstructor  Justification=The consctructor of an abstract class shouldn't be called anyway. 
+            // ReSharper disable once VirtualMemberCallInConstructor  Justification=The consctructor of an abstract class shouldn't be called anyway.
             MakeConfig();
         }
 
@@ -46,10 +47,10 @@ namespace R2DSEssentials
         }
 
         protected abstract void UnHook();
+
         protected abstract void Hook();
 
         protected abstract void MakeConfig();
-
 
         protected ConfigEntry<T> AddConfig<T>(string key, T defaultValue, string description)
         {
@@ -68,14 +69,17 @@ namespace R2DSEssentials
         {
             Logger.LogMessage($"[{Name}] {message}");
         }
+
         protected void LogModuleInfo(object message)
         {
             Logger.LogInfo($"[{Name}] {message}");
         }
+
         protected void LogModuleWarning(object message)
         {
             Logger.LogWarning($"[{Name}] {message}");
         }
+
         protected void LogModuleError(object message)
         {
             Logger.LogError($"[{Name}] {message}");

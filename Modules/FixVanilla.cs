@@ -1,10 +1,10 @@
-﻿using System;
 using Facepunch.Steamworks;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using R2DSEssentials.Util;
 using RoR2;
 using RoR2.Networking;
+using System;
 using UnityEngine;
 using UnityEngine.Networking;
 using Console = RoR2.Console;
@@ -15,8 +15,10 @@ namespace R2DSEssentials.Modules
     class FixVanilla : R2DSEModule
     {
         public const string ModuleName = nameof(FixVanilla);
+
         public const string ModuleDescription =
             "Fix vanilla issues: unity console spam, camera console spam when players are in menu, disconnected players still showing in server browser, and ability for Server to talk in chat directly from the console";
+
         public const bool DefaultEnabled = true;
 
         public FixVanilla(string name, string description, bool defaultEnabled) : base(name, description, defaultEnabled)
