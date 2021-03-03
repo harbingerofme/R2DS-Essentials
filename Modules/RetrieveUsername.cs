@@ -107,9 +107,9 @@ namespace R2DSEssentials.Modules
 
         private IEnumerator WebRequestCoroutine(ulong steamId)
         {
-            const string regexForLookUp = "<dt class=\"key\">name<\\/dt>\\s*<dd class=\"value\">(.*)<\\/dd>";
+            const string regexForLookUp = "<br>name \\s*<code>(.*)<\\/code>";
 
-            var ioUrlRequest = "https://steamid.io/lookup/" + steamId;
+            var ioUrlRequest = "https://steamidfinder.com/lookup/" + steamId;
 
             var webRequest = UnityWebRequest.Get(ioUrlRequest);
             yield return webRequest.SendWebRequest();
