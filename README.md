@@ -22,8 +22,8 @@ Track update progress, get support and suggest new features over at the [R2DSE d
 
 ### Installation
 
-1. Make sure you grab at least the `MMHOOK_Assembly-CSharp.dll` file from the latest R2API release and put it in your `BepInEx/Plugins` folder.
-2. Drop `R2DS-Essentials.dll` in your `BepInEx/Plugins` folder.
+1. Make sure you have the [HookGenPatcher](https://thunderstore.io/package/RiskofThunder/HookGenPatcher/) installed
+2. Drop `R2DSEssentials.dll` in your `BepInEx/Plugins` folder.
 
 ### Optimal Usage
 
