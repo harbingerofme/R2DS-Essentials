@@ -19,7 +19,7 @@ namespace R2DSEssentials
         private const string ModVer = "1.1.0";
         private const string ModName = "R2DSE";
         // ReSharper disable once MemberCanBePrivate.Global  Justification = This is public facing for other mods to quickly access.
-        public const string ModGuid = "com.HarbAndDeath." + ModName;
+        public const string ModGuid = "iHarbHD." + ModName;
         public static ManualLogSource Log;
         public static ConfigFile Configuration;
         public static Dictionary<string, R2DSEModule> Modules;
