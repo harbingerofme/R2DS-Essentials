@@ -19,11 +19,12 @@ namespace R2DSEssentials
         [DllImport("kernel32.dll")]
         private static extern bool FreeLibrary(IntPtr hModule);
 
-        private const string NativeRemoveGarbageName = "UnityPlayerRemoveGarbage.dll";
+        //private const string NativeRemoveGarbageName = "UnityPlayerRemoveGarbage.dll";
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        
         private delegate int NativeRemoveGarbage();
-
+        /**
         internal static void InjectRemoveGarbage()
         {
             if (!_alreadyCalled)
@@ -65,7 +66,7 @@ namespace R2DSEssentials
                 PluginEntry.Log.LogWarning("[R2DSE NativeWrapper] NativeRemoveGarbage has already been called.");
             }
         }
-
+        **/
         private static IntPtr LoadUnmanagedLibraryFromResource(Assembly assembly, string libraryResourceName, string libraryName)
         {
             // ReSharper disable AssignNullToNotNullAttribute

@@ -31,18 +31,20 @@ namespace R2DSEssentials.Modules
         {
         }
 
+
         protected override void Hook()
         {
             On.RoR2.NetworkPlayerName.GetResolvedName += OnGetResolvedName;
             Run.onServerGameOver += EmptyCachesOnGameOver;
-            On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += RemoveCacheOnPlayerDisconnect;
+            On.RoR2.Networking.NetworkManagerSystem.OnServerDisconnect += RemoveCacheOnPlayerDisconnect;
         }
+
 
         protected override void UnHook()
         {
             On.RoR2.NetworkPlayerName.GetResolvedName -= OnGetResolvedName;
             Run.onServerGameOver -= EmptyCachesOnGameOver;
-            On.RoR2.Networking.GameNetworkManager.OnServerDisconnect -= RemoveCacheOnPlayerDisconnect;
+            On.RoR2.Networking.NetworkManagerSystem.OnServerDisconnect -= RemoveCacheOnPlayerDisconnect;
         }
 
         protected override void MakeConfig()
@@ -58,7 +60,7 @@ namespace R2DSEssentials.Modules
         {
             if (Server.Instance != null)
             {
-                return UsernamesCache.TryGetValue(self.steamId.value, out var name) ? name : GetPersonaNameWebAPI(self.steamId.value);
+                return UsernamesCache.TryGetValue(self.steamId.steamValue, out var name) ? name : GetPersonaNameWebAPI(self.steamId.steamValue);
             }
 
             return orig(ref self);
@@ -70,13 +72,13 @@ namespace R2DSEssentials.Modules
             RequestCache.Clear();
         }
 
-        private static void RemoveCacheOnPlayerDisconnect(On.RoR2.Networking.GameNetworkManager.orig_OnServerDisconnect orig, GameNetworkManager self, NetworkConnection conn)
+        private static void RemoveCacheOnPlayerDisconnect(On.RoR2.Networking.NetworkManagerSystem.orig_OnServerDisconnect orig, NetworkManagerSystem self, NetworkConnection conn)
         {
             var nu = Util.Networking.FindNetworkUserForConnectionServer(conn);
 
             if (nu != null)
             {
-                var steamId = nu.GetNetworkPlayerName().steamId.value;
+                var steamId = nu.GetNetworkPlayerName().steamId.steamValue;
 
                 if (steamId != 0)
                 {
@@ -107,8 +109,8 @@ namespace R2DSEssentials.Modules
 
         private IEnumerator WebRequestCoroutine(ulong steamId)
         {
-            const string regexForLookUp = "<br>name \\s*<code>(.*)<\\/code>";
-
+            const string regexForLookUp = "<th scope=\"row\">name</th>\\s*<td><code>(.*)<\\/code></td>";
+             
             var ioUrlRequest = "https://steamidfinder.com/lookup/" + steamId;
 
             var webRequest = UnityWebRequest.Get(ioUrlRequest);

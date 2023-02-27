@@ -27,15 +27,16 @@ namespace R2DSEssentials.Modules
 
         protected override void Hook()
         {
-            NativeWrapper.InjectRemoveGarbage();
+            //NativeWrapper.InjectRemoveGarbage();
 
             IL.RoR2.Chat.CCSay += ServerSay;
 
-            IL.RoR2.UI.MPEventSystem.Update += DisablePauseMenuUI;
+            //IL.RoR2.UI.MPEventSystem.Update += DisablePauseMenuUI;
 
-            On.RoR2.Networking.GameNetworkManager.OnServerDisconnect += EndAuthOnClientDisconnect;
+            On.RoR2.Networking.NetworkManagerSystem.OnServerDisconnect += EndAuthOnClientDisconnect;
         }
 
+        /**
         private void DisablePauseMenuUI(ILContext il)
         {
             var cursor = new ILCursor(il);
@@ -57,7 +58,7 @@ namespace R2DSEssentials.Modules
             );
             cursor.Next.Operand = isBatchLabel;
         }
-
+        **/
         protected override void MakeConfig()
         {
             //can be empty.
@@ -67,9 +68,9 @@ namespace R2DSEssentials.Modules
         {
             IL.RoR2.Chat.CCSay -= ServerSay;
 
-            IL.RoR2.UI.MPEventSystem.Update -= DisablePauseMenuUI;
+            //IL.RoR2.UI.MPEventSystem.Update -= DisablePauseMenuUI;
 
-            On.RoR2.Networking.GameNetworkManager.OnServerDisconnect -= EndAuthOnClientDisconnect;
+            On.RoR2.Networking.NetworkManagerSystem.OnServerDisconnect -= EndAuthOnClientDisconnect;
         }
 
         private static void ServerSay(ILContext il)
@@ -104,13 +105,13 @@ namespace R2DSEssentials.Modules
             cursor.Next.Operand = label;
         }
 
-        private static void EndAuthOnClientDisconnect(On.RoR2.Networking.GameNetworkManager.orig_OnServerDisconnect orig, GameNetworkManager self, NetworkConnection conn)
+        private static void EndAuthOnClientDisconnect(On.RoR2.Networking.NetworkManagerSystem.orig_OnServerDisconnect orig, NetworkManagerSystem self, NetworkConnection conn)
         {
             var nu = Util.Networking.FindNetworkUserForConnectionServer(conn);
 
             if (nu != null)
             {
-                var steamId = nu.GetNetworkPlayerName().steamId.value;
+                var steamId = nu.GetNetworkPlayerName().steamId.steamValue;
 
                 if (steamId != 0)
                 {

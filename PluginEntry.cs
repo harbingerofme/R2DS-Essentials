@@ -16,7 +16,7 @@ namespace R2DSEssentials
     [BepInPlugin(ModGuid, ModName, ModVer)]
     public sealed class PluginEntry : BaseUnityPlugin
     {
-        private const string ModVer = "1.1.0";
+        private const string ModVer = "1.3.0";
         private const string ModName = "R2DSE";
         // ReSharper disable once MemberCanBePrivate.Global  Justification = This is public facing for other mods to quickly access.
         public const string ModGuid = "com.HarbAndDeath." + ModName;
@@ -132,7 +132,7 @@ namespace R2DSEssentials
 
             OnFinishLoading?.Invoke();
         }
-
+        /** 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Code Quality", "IDE0051:Remove unused private members", Justification = "Update is called by Unity.")]
         private void Update()
         {
@@ -163,6 +163,7 @@ namespace R2DSEssentials
                 }
             }
         }
+        */
 
         public static void InvokeCMD(string commandname, params object[] arguments)
         {

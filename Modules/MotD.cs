@@ -148,7 +148,7 @@ namespace R2DSEssentials.Modules
         {
             time = DateTime.Now.AddMinutes(mothValConfig.Value);
 
-            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal += MessageOnPlayerJoin;
+            IL.RoR2.Networking.NetworkManagerSystem.OnServerAddPlayerInternal += MessageOnPlayerJoin;
             Stage.onServerStageBegin += MotrAndMots;
             Run.onRunStartGlobal += ResetStageCount;
             RoR2Application.onFixedUpdate += RoR2Application_onFixedUpdate;
@@ -187,7 +187,7 @@ namespace R2DSEssentials.Modules
 
         protected override void UnHook()
         {
-            IL.RoR2.Networking.GameNetworkManager.OnServerAddPlayerInternal -= MessageOnPlayerJoin;
+            IL.RoR2.Networking.NetworkManagerSystem.OnServerAddPlayerInternal -= MessageOnPlayerJoin;
             Stage.onServerStageBegin -= MotrAndMots;
             Run.onRunStartGlobal -= ResetStageCount;
             RoR2Application.onFixedUpdate -= RoR2Application_onFixedUpdate;
@@ -226,7 +226,7 @@ namespace R2DSEssentials.Modules
                         return;
                     }
 
-                    var steamId = ServerAuthManager.FindAuthData(conn).steamId.value;
+                    var steamId = ServerAuthManager.FindAuthData(conn).steamId.steamValue;
                     if (RetrieveUsername.UsernamesCache.ContainsKey(steamId))
                     {
                         MakeAndSendMotd(conn);
