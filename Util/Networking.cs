@@ -35,7 +35,7 @@ namespace R2DSEssentials.Util
         {
             foreach (var networkUser in NetworkUser.readOnlyInstancesList)
             {
-                if (networkUser.GetNetworkPlayerName().steamId.value == steamId)
+                if (networkUser.GetNetworkPlayerName().steamId.steamValue == steamId)
                 {
                     return networkUser;
                 }
@@ -57,7 +57,7 @@ namespace R2DSEssentials.Util
             return -1;
         }
 
-        internal static void SendPrivateMessage(Chat.ChatMessageBase message, NetworkConnection connection)
+        internal static void SendPrivateMessage(ChatMessageBase message, NetworkConnection connection)
         {
             NetworkWriter writer = new NetworkWriter();
             writer.StartMessage((short)59);
